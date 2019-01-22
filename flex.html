@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>flex</title>
+    <style>
+        *{margin: 0;padding: 0;}
+        body{font-size: 20px;}
+        .con{display: flex;width: 375px;height: 50px;border: 1px solid red;}
+        .item1{background-color: rgb(214, 128, 188)}
+        .item2{background-color: rgb(218, 188, 154)}
+        .item3{background-color: rgb(159, 216, 233)}
+        .item1{width: 100px;flex-shrink: 1;}
+        .item2{width: 150px;flex-shrink: 2;}
+        .item3{width: 200px;flex-shrink: 3;}
+        /* .item2,.item1{flex: 1} */
+        /* .item3{flex: 1.75} */
+        .item::after{
+            content: '';
+            display: block;
+            width: 6px;height: 6px;border-radius: 50%;background: #000;
+        }
+        .item3::after{
+            content: '8899';
+        }
+    </style>
+</head>
+<body>
+    <div class="con">
+        <div class="item item1 item item">一</div>
+        <div class="item item2">二</div>
+        <div class="item item3">三</div>
+    </div>
+    <script>
+        var item = document.querySelector('.item1');
+        item.className+=' item'
+        item.classList.add('item22')
+        //console.log(item.classList);
+    </script>
+</body>
+</html>

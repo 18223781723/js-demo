@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        .view {
+            width: 1000px;
+            height: 400px;
+            margin: 100px auto;
+            padding: 0 100px;
+            border: 1px solid red;
+            overflow: hidden;
+        }
+
+        .banner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 3200px;
+            height: 400px;
+        }
+
+        img {
+            width: 200px;
+            height: 200px;   
+    
+        }
+        .now {
+            transform: scale(2)
+        }
+    </style>
+</head>
+
+<body>
+    <div class="view">
+        <div class="banner">
+            <img src="images/bird1.png" alt="" class="now" >
+            <img src="images/bird2.png" alt="" class="img" >
+            <img src="images/bird3.png" alt="" class="img" >
+            <img src="images/bird4.png" alt="" class="img" >
+            <img src="images/bird5.png" alt="" class="img" >
+            <img src="images/bird6.png" alt="" class="img" >
+            <img src="images/bird7.png" alt="" class="img" >
+            <img src="images/bird8.png" alt="" class="img" >
+            <img src="images/bird9.png" alt="" class="img" >
+            <img src="images/bird10.png" alt="" class="img" >
+            <img src="images/bird11.png" alt="" class="img" >
+        </div>
+    </div>
+    <script>
+        var imgList = document.querySelectorAll('img');
+        var banner = document.querySelector('.banner');
+        var index = 0;
+        var left = 0;
+        banner.style.transition = 0.5 + 's';
+        function loop() {
+            if(index > imgList.length-1){
+                index = 0;
+            }else {
+                index++;
+            }
+            var last = imgList[imgList.length-1].className;
+            for (var i = imgList.length - 1; i >0; i--) {
+                imgList[i].style.transition = 0.5 + 's';
+                imgList[i].className = imgList[i-1].className;         
+            }
+            imgList[0].className = last;
+            //banner.style.transform = 'translateX(-'+ (index)*300+'px)';
+            banner.style.marginLeft = -index*300+'px';
+            left = parseInt(getComputedStyle(banner).marginLeft);
+            //console.log('marginleft:',left)
+            setTimeout(loop,1000)            
+        }
+        //loop();
+
+        var touchX = 0, touchY = 0, moveX = 0, moveY = 0;
+        document.onmousedown = function(e){
+            var e = e || window.event;
+            touchX = e.clientX;
+            touchY = e.clientY;
+            left = parseInt(getComputedStyle(banner).marginLeft);//点击时获取偏移量
+            for(var j=0;j<imgList.length;j++){
+                imgList[j].style.transiton = '';
+            }
+            //console.log('点击位置：',touchX,touchY,left);
+            this.onmousemove = function(e){
+                var e = e || window.event;
+                moveX = e.clientX;
+                moveY = e.clientY;
+                var disX = moveX - touchX;//移动距离
+                
+                // console.log('鼠标移动：',moveX,moveY,'移动距离：',disX);
+                var move = (left + disX);
+                if(move >= 0){
+                    move = 0;
+                }else if(move < -2999){
+                    move = -2999
+                }
+                banner.style.transition = '';
+                banner.style.marginLeft = move + 'px';
+                //console.log('move：',move);
+                var cur = move / 300;
+                var ind = move % 300;
+                
+                if(cur<=0){cur = Math.ceil(-cur)}else{cur = Math.ceil(cur)}
+                if(cur<-0){
+                    imgList[0].style.transform = 'scale(2)';
+                }
+                if(cur != 0){
+                    imgList[cur-1].style.transform = 'scale('+(2+ind/300) +')';
+                    imgList[cur].style.transform = 'scale('+(1-ind/300) +')';
+                }
+                // if(cur >=10 ){
+                //     imgList[cur-1].style.transform = 'scale(1)';
+                //     imgList[cur].style.transform = 'scale(2)';
+                // }
+                console.log('cur:',cur,'ind:',ind,'scale:',(1+ind/300))
+                
+            }
+            this.onmouseup = function(){
+                this.onmousemove = null;
+                banner.style.transition = 0.5 + 's';
+                for(var j=0;j<imgList.length;j++){
+                    imgList[j].style.transiton = 0.5 + 's';
+                }
+            }
+        }
+
+    </script>
+</body>
+
+</html>
