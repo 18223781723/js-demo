@@ -8,11 +8,15 @@
 </head>
 <body>
     <script>
-        // 设置cookie
         function setCookie(){
-            var time = 60000;
+            document.cookie = "userName=boy; expires=Thu, 31 Feb 2019 06:15:50 GMT";
+            console.log(document.cookie)
         }
         setCookie();
+		function deleteCookie(){
+			document.cookie = "userName=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+			console.log(document.cookie)
+		}
     </script>
 </body>
 </html>

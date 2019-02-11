@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>函数防抖和节流</title>
+</head>
+
+<body>
+    <div style="width:200px;height:2000px;background:#F2F2F2"></div>
+    <script>
+        // 函数防抖就是在一段时间触发或调用函数时,只执行一次; 也可以理解为触发n毫秒之后才会调用一次
+        // debounce函数用来包裹我们的事件处理方法
+            function debounce(fn, delay) {
+                // 持久化一个定时器
+                var timer = null;
+
+                // 闭包函数可以访问timer
+                return function () {
+                    // 通过 this 和 arguments 获得函数的作用域和参数
+                    var context = this;
+                    var args = arguments;
+                    // console.log(context,args)
+                    // 如果事件被触发，清除timer并重新开始计时
+                    clearTimeout(timer)
+                    console.log(timer)
+                    timer = setTimeout(function () {
+                        fn.apply(context, args)
+                    }, delay)
+                }
+            }
+
+            function foo() {
+                console.log('You are scrolling!')
+            }
+            window.onscroll = debounce(foo, 500)
+            //document.addEventListener('scroll', debounce(foo, 500));
+
+            // 如果一个事件被频繁触发多次，节流函数可以按照固定频率去执行对应的事件处理方法
+            function throttle(fn, threshold) {
+                    var last
+
+                    var timer
+
+                    threshold || (threshold = 250)
+
+                    return function () {
+                        let context = this
+                        let args = arguments
+
+                        var now = +new Date()
+
+                        if (last && now < last + threshold) {
+                            clearTimeout(timer)
+
+                            timer = setTimeout(function () {
+                                last = now
+                                fn.apply(context, args)
+                            }, threshold)
+                        } else {
+                            last = now
+                            fn.apply(context, args)
+                        }
+                    }
+                }
+    </script>
+</body>
+
+</html>
