@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>日历</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .month-box {
+            max-width: 375px;
+            width: 100%;
+            margin: 0 auto;
+            font-size: 14px;
+            line-height: 30px;
+            text-align: center;
+        }
+
+        .flex {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+        }
+
+        .week-list {
+            display: flex;
+        }
+
+        .week-item {
+            flex: 1;
+        }
+
+        .date-list {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .date-item {
+            width: calc(100% / 7);
+            height: 30px;
+        }
+
+        .active {
+            background: #4072ee;
+        }
+    </style>
+</head>
+
+<body>
+
+<script>
+    /**
+     * 原生javascript实现的日历
+     */
+    let calendar = {
+        data: {
+            date: new Date(),
+            thisYear: new Date().getFullYear(), // 以四位数字返回年份
+            thisMonth: new Date().getMonth(), // 返回月份 (0 ~ 11),一月为 0,二月为 1,以此类推
+            today: new Date().getDate(), // 返回一个月中的某一天 (1 ~ 31)
+            wList: ['日', '一', '二', '三', '四', '五', '六']
+        },
+        /* 初始化执行 */
+        init: function () {
+            this.setDate();
+            // body事件委托
+            document.querySelector('body').onclick = this.dateClick.bind(this);
+        },
+        /* 设置日期 */
+        setDate: function (year = new Date().getFullYear(), month = new Date().getMonth()) {
+            this.data.date.setFullYear(year);
+            this.data.date.setMonth(month);
+            this.data.date.setDate(1); // 调整到当月第一天
+            let firstDayOfWeek = this.data.date.getDay();
+            let options = {
+                year: year, // 以四位数字返回年份
+                month: month, // 返回月份 (0 ~ 11),一月为 0,二月为 1,以此类推
+                firstDayOfWeek: firstDayOfWeek, // 当月第一天星期几
+            };
+            this.render(options);
+        },
+        /**
+         * 渲染日期
+         * @param options.year 渲染的年份
+         * @param options.month 渲染的月份
+         * @param options.firstDayOfWeek 当月第一天星期几
+         */
+        render: function (options) {
+            let mList = [31, 28 + this.isLeapYear(options.year), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            let html = '', total = mList[options.month], isToday = false, dayOfMonth = 0;
+
+            html = '<div class="month-box"><div class="flex"><button type="button" onclick="calendar.prev()">上月</button>'
+                + '<p class="title">' + options.year + '-' + this.fillZero(options.month + 1) + '</p>'
+                + '<button type="button" onclick="calendar.next()">下月</button></div><div class="week-list">';
+            for (let item of this.data.wList) {
+                html += '<p class="week-item">' + item + '</p>';
+            }
+            html += '</div>';
+
+            html += '<div class="date-list">';
+            for (let i = 0; i < 42; i++) {
+                isToday = false;
+                if (i >= options.firstDayOfWeek && i < total + options.firstDayOfWeek) {
+                    dayOfMonth = i - options.firstDayOfWeek + 1;
+                    if (this.data.thisYear === options.year &&
+                        this.data.thisMonth === options.month &&
+                        this.data.today === dayOfMonth) isToday = true;
+                    html += '<p class="date-item" data-date="'
+                        + (options.year + '-' + this.fillZero(options.month + 1) + '-' + this.fillZero(dayOfMonth)) + '">'
+                        + (isToday ? "今天" : dayOfMonth) + '</p>';
+                } else {
+                    html += '<p class="date-item"></p>';
+                }
+            }
+            html += '</div>';
+
+            document.querySelector('body').innerHTML = html;
+        },
+        /* 判断是否闰年 */
+        isLeapYear: function (year) {
+            if (year % 4 === 0 && year % 100 !== 0 || year % 400 === 0) {
+                return 1;
+            } else {
+                return 0;
+            }
+        },
+        /* 补0 */
+        fillZero: function (value) {
+            let result = value;
+            if (value < 10) result = '0' + value;
+            return result;
+        },
+        /* 用于单个日历切换上月 */
+        prev: function () {
+            let year = this.data.date.getFullYear();
+            let month = this.data.date.getMonth();
+            month--;
+            if (month < 0) {
+                month = 11;
+                year -= 1;
+            }
+            this.setDate(year, month);
+        },
+        /* 用于单个日历切换下月 */
+        next: function () {
+            let year = this.data.date.getFullYear();
+            let month = this.data.date.getMonth();
+            month++;
+            if (month > 11) {
+                month = 0;
+                year += 1;
+            }
+            this.setDate(year, month);
+        },
+        /* 绑定点击事件 */
+        dateClick: function (e) {
+            let target = e.target;
+            if (target.dataset.date === undefined) return;
+            if (target.className === 'date-item active') return;
+            let active = document.querySelector('.date-item.active')
+            if (active !== null) active.className = 'date-item';
+            target.className = 'date-item active';
+            console.log('选择日期：' + target.dataset.date);
+        }
+    };
+    calendar.init();
+</script>
+</body>
+
+</html>
