@@ -13,12 +13,13 @@
      * 原生javascript实现call
      */
     let father = {
-            name: 'father',
-            age: 36,
-            say: function (str) {
-                console.log(str + ': my name is ' + this.name + ', my age is ' + this.age);
-            }
-        };
+        name: 'father',
+        age: 36,
+        say: function (params) {
+            console.log(params + ': my name is ' + this.name + ', my age is ' + this.age);
+            return params;
+        }
+    };
     let child = {
         name: 'child',
         age: 12
@@ -40,10 +41,11 @@
         context[fn] = this;
         // 去除第一个参数
         let args = [...arguments].slice(1);
-        // 执行
-        context[fn](...args);
+        // 保存函数返回值
+        let res = context[fn](...args);
         // 为了不改变原对象，删除添加的属性
         delete context[fn];
+        return res;
     };
     father.say.myCall(child, 'use myCall');
 
