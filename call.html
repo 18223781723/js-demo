@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>call</title>
+</head>
+<body>
+<script>
+    /**
+     * 原生javascript实现call
+     */
+    let father = {
+            name: 'father',
+            age: 36,
+            say: function (str) {
+                console.log(str + ': my name is ' + this.name + ', my age is ' + this.age);
+            }
+        };
+    let child = {
+        name: 'child',
+        age: 12
+    };
+
+    // call基本用法
+    father.say('before use call');
+    father.say.call(child, 'use call');
+
+    // 实现call
+    Function.prototype.myCall = function (object) {
+        let context = object || window;
+        /**
+         * Symbol唯一标识，不会覆盖
+         * 如果object本身有fn属性，context.fn会覆盖
+         */
+        let fn = Symbol('fn');
+        // 此处this指向say
+        context[fn] = this;
+        // 去除第一个参数
+        let args = [...arguments].slice(1);
+        // 执行
+        context[fn](...args);
+        // 为了不改变原对象，删除添加的属性
+        delete context[fn];
+    };
+    father.say.myCall(child, 'use myCall');
+
+</script>
+</body>
+</html>
