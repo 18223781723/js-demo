@@ -29,6 +29,7 @@
         background: #e4e7ed;
         border-top: 8px solid #FFF;
         border-bottom: 8px solid #FFF;
+        cursor: pointer;
     }
 
     .progress {
@@ -50,7 +51,7 @@
         background: transparent;
         border: 1px solid #409eff;
         border-radius: 50%;
-        cursor: pointer;
+        pointer-events: none;
     }
 
     .value {
@@ -67,97 +68,93 @@
     </div>
     <div class="dot"></div>
 </div>
-<!--原生input type="range"的效果如下，不同浏览器显示可能会有差异-->
+<h4 style="margin-top: 30px;">原生input type="range"的效果如下，不同浏览器显示可能会有差异</h4>
 <input type="range">
 <script>
     /**
      * 原生javascript实现slider，支持移动端、pc端
      */
-    // 获取元素
+        // 获取元素
     let content = document.querySelector('.content');
     let bar = document.querySelector('.bar');
     let progress = document.querySelector('.progress');
     let dot = document.querySelector('.dot');
     let p = document.querySelector('.value');
+
     // offsetWidth 获取当前节点的宽度 （width + border + padding）
     // 总长度减去原点覆盖的部分
     let length = bar.offsetWidth;
     let dotR = dot.offsetWidth / 2;
 
     function pcDrag() {
+        // 鼠标按下标识
+        let isMousedown = false;
+
         // 鼠标按下事件
-        dot.onmousedown = function (e) {
-            // offsetLeft 获取的是相对于父对象的左边距, 返回的是数值， 没有单位
-            let dotL = dot.offsetLeft;
-            // clientX 事件属性返回当事件被触发时鼠标指针向对于浏览器页面（或客户区）的水平坐标
-            let mouseX = e.clientX; //鼠标按下的位置
-            document.onmousemove = function (e) {
-                // 浏览器当前位置减去鼠标按下的位置
-                let moveL = e.clientX - mouseX; // 鼠标移动的距离
-                // 保存newL是必要的
-                let newL = dotL + moveL; // left值
-                // 判断最大值和最小值
-                if (newL < -dotR) {
-                    newL = -dotR;
-                } else if (newL >= length - dotR) {
-                    newL = length - dotR;
-                }
-                // 改变left值
-                dot.style.left = newL + 'px';
-                progress.style.width = newL + dotR + 'px';
-                // 计算值
-                let value = (newL + dotR) / length * 100;
-                p.innerHTML = Math.ceil(value) + '%';
-                return false; // 取消默认事件
-            };
-            document.onmouseup = function () {
-                document.onmousemove = null; // 解绑移动事件
-                document.onmouseup = null;
-            };
-            return false;
+        bar.onmousedown = function (e) {
+            isMousedown = true;
+
+            let offsetX = e.clientX - content.offsetLeft;
+            dot.style.left = offsetX - dotR + 'px';
+            progress.style.width = offsetX + 'px';
+            p.innerHTML = Math.ceil(offsetX / length * 100) + '%';
+        };
+
+        // 鼠标移动事件
+        document.onmousemove = function (e) {
+            if (isMousedown === false) return;
+
+            let offsetX = e.clientX - content.offsetLeft;
+
+            // 边界判断
+            if (offsetX < 0) {
+                offsetX = 0;
+            } else if (offsetX >= length) {
+                offsetX = length;
+            }
+
+            dot.style.left = offsetX - dotR + 'px';
+            progress.style.width = offsetX + 'px';
+            p.innerHTML = Math.ceil(offsetX / length * 100) + '%';
+        };
+
+        // 鼠标松开事件
+        document.onmouseup = function () {
+            isMousedown = false;
         };
     }
 
     function mobileDrag() {
-        let mouseX, dotL;
-        dot.ontouchstart = function (e) {
-            // offsetLeft 获取的是相对于父对象的左边距, 返回的是数值， 没有单位
-            dotL = dot.offsetLeft;
-            // clientX 事件属性返回当事件被触发时鼠标指针向对于浏览器页面（或客户区）的水平坐标
-            mouseX = e.touches[0].clientX; //鼠标按下的位置
+        // 触摸开始事件
+        bar.ontouchstart = function (e) {
+            let offsetX = e.touches[0].clientX - content.offsetLeft;
+            dot.style.left = offsetX - dotR + 'px';
+            progress.style.width = offsetX + 'px';
+            p.innerHTML = Math.ceil(offsetX / length * 100) + '%';
         };
-        dot.ontouchmove = function (e) {
-            // 浏览器当前位置减去鼠标按下的位置
-            let moveL = e.touches[0].clientX - mouseX; // 鼠标移动的距离
-            // 保存newL是必要的
-            let newL = dotL + moveL; // left值
-            // 判断最大值和最小值
-            if (newL < -dotR) {
-                newL = -dotR;
-            } else if (newL >= length - dotR) {
-                newL = length - dotR;
+
+        // 触摸移动事件
+        bar.ontouchmove = function (e) {
+            let offsetX = e.touches[0].clientX - content.offsetLeft;
+
+            // 边界判断
+            if (offsetX < 0) {
+                offsetX = 0;
+            } else if (offsetX >= length) {
+                offsetX = length;
             }
-            // 改变left值
-            dot.style.left = newL + 'px';
-            progress.style.width = newL + dotR + 'px';
-            // 计算值
-            let value = (newL + dotR) / length * 100;
-            p.innerHTML = Math.ceil(value) + '%';
+
+            dot.style.left = offsetX - dotR + 'px';
+            progress.style.width = offsetX + 'px';
+            p.innerHTML = Math.ceil(offsetX / length * 100) + '%';
         }
     }
 
-    // 点击
-    bar.onclick = function (e) {
-        let left = e.clientX - content.offsetLeft;
-        dot.style.left = left - dotR + 'px';
-        progress.style.width = left + 'px';
-        let value = left / length * 100;
-        p.innerHTML = Math.ceil(value) + '%';
-    };
     // 移动端拖拽
     mobileDrag();
     // pc端拖拽
     pcDrag();
+
 </script>
 </body>
 
