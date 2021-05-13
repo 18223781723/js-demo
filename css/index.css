@@ -1,0 +1,32 @@
+html {
+	min-height: 100vh;
+}
+
+body {
+	margin: 0;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+th {
+	text-align: left;
+	background-color: #FAFAFA;
+}
+
+th,
+td {
+	padding: 16px;
+	border: 1px solid #F0F0F0;
+}
+
+tr:hover td {
+	background: #FAFAFA;
+}
+
+a {
+	text-decoration: none;
+	color: #1890FF;
+}
