@@ -4,6 +4,7 @@ html {
 
 body {
 	margin: 0;
+	font-size: 14px;
 }
 
 table {
@@ -29,4 +30,42 @@ tr:hover td {
 a {
 	text-decoration: none;
 	color: #1890FF;
+}
+
+.pagination {
+	display: flex;
+	justify-content: flex-end;
+	padding: 16px;
+}
+
+.pagination button {
+	width: 32px;
+	height: 32px;
+	padding: 0;
+	border: 1px solid #D9D9D9;
+	border-radius: 2px;
+	background: #FFF;
+	cursor: pointer;
+	transition: .3s;
+}
+
+.pagination button:not(:last-child) {
+	margin-right: 8px;
+}
+
+.pagination button:not(:disabled):hover,
+.pagination button.active {
+	color: #1890FF;
+	border-color: #1890FF;
+}
+
+.pagination button:not(:disabled):active {
+	color: #096DD9;
+	border-color: #096DD9;
+}
+
+.pagination button:disabled {
+	color: #BFBFBF;
+	background: #F5F5F5;
+	cursor: not-allowed;
 }
