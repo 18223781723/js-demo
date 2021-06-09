@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport"
+		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>infiniteScroll</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			font-size: 14px;
+		}
+
+		ul {
+			padding: 0;
+			margin: 0;
+			list-style: none;
+		}
+
+		li {
+			display: flex;
+			align-items: center;
+			padding: 15px;
+			border-bottom: 1px solid #E6E6E6;
+		}
+
+		li img {
+			width: 64px;
+			height: 64px;
+			margin-right: 15px;
+			object-fit: cover;
+		}
+
+		li p {
+			margin: 0;
+		}
+
+		li p:first-child {
+			margin-bottom: 15px;
+		}
+
+		.loadmore {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 20px;
+			padding: 15px;
+			line-height: 20px;
+		}
+
+		.loadmore:active {
+			background: #F2F2F2;
+		}
+
+		.loading {
+			width: 18px;
+			height: 18px;
+			margin-right: 5px;
+			animation: loading 1s steps(12, end) infinite;
+		}
+
+		@keyframes loading {
+			from {
+				transform: rotate(0deg)
+			}
+
+			to {
+				transform: rotate(360deg);
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<ul id="list"></ul>
+	<div class="loadmore" id="loadmore">点击加载更多</div>
+
+
+	<script>
+		const ulDom = document.getElementById('list');
+		const loadmoreDom = document.getElementById('loadmore');
+		const MAX_LENGTH = 100;
+		let loading = false;
+		let id = 1;
+		// 渲染dom
+		function render() {
+			let html = '';
+			for (let i = 0; i < 20; i++) {
+				html += `
+				<li>
+					<img src="../images/image1.jpg" alt="">
+					<div>
+						<p>item${id++}</p>
+						<p>我是白月魁，大家喜欢叫我白老板。</p>
+					</div>
+				</li>`;
+			}
+			ulDom.insertAdjacentHTML('beforeend', html);
+			if (id < MAX_LENGTH) {
+				loadmoreDom.innerHTML = '点击加载更多';
+			} else {
+				loadmoreDom.innerHTML = '我也是有底线的';
+			}
+			loading = false;
+		}
+		render();
+
+		// 加载更多
+		function loadmore() {
+			if (id >= MAX_LENGTH || loading) return;
+			loading = true;
+			loadmoreDom.innerHTML = '<img class="loading" src="../images/loading.png" alt="">加载中...';
+			// 模拟异步加载
+			setTimeout(() => {
+				render();
+			}, 1000);
+		}
+
+		// 交叉观察
+		const intersectionObserver = new IntersectionObserver((entries) => {
+			if (entries[0].intersectionRatio > 0 && !loading && id < MAX_LENGTH) {
+				loadmore();
+			}
+		}, { threshold: [0.9] });
+		intersectionObserver.observe(loadmoreDom);
+
+		// 点击加载更多
+		loadmoreDom.addEventListener('click', (e) => {
+			loadmore();
+		});
+	</script>
+</body>
+
+</html>

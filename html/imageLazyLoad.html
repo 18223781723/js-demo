@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport"
+		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>imageLazyLoad</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+		}
+
+		div {
+			max-width: 500px;
+			width: 100%;
+			margin: 0 auto;
+		}
+
+		img {
+			display: block;
+			width: 100%;
+			height: 240px;
+			margin-top: 15px;
+			object-fit: cover;
+		}
+
+		img[src=""] {
+			opacity: 0;
+		}
+	</style>
+</head>
+
+<body>
+	<div>
+		<img src="" alt="" data-src='../images/image1.jpg'>
+		<img src="" alt="" data-src='../images/image2.jpg'>
+		<img src="" alt="" data-src='../images/image3.jpg'>
+		<img src="" alt="" data-src='../images/image4.jpg'>
+		<img src="" alt="" data-src='../images/image5.jpg'>
+		<img src="" alt="" data-src='../images/image1.jpg'>
+		<img src="" alt="" data-src='../images/image2.jpg'>
+		<img src="" alt="" data-src='../images/image3.jpg'>
+		<img src="" alt="" data-src='../images/image4.jpg'>
+		<img src="" alt="" data-src='../images/image5.jpg'>
+	</div>
+
+	<script>
+		// 获取dom
+		const imgDomList = document.querySelectorAll('img');
+
+		// 交叉观察
+		const intersectionObserver = new IntersectionObserver((entires) => {
+			entires.forEach((item, index) => {
+				if (item.intersectionRatio > 0) {
+					// 模拟异步加载
+					setTimeout(() => {
+						item.target.src = item.target.dataset.src;
+						intersectionObserver.unobserve(item.target);
+					}, 500);
+				}
+			})
+		}, {
+			threshold: [0.25]
+		});
+
+		[...imgDomList].forEach((item) => {
+			intersectionObserver.observe(item);
+		});
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport"
+		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>deepCopy</title>
+</head>
+
+<body>
+	<script src="http://test.codeman.top/lodash.js"></script>
+
+
+	<script>
+		const obj = {
+			reg: new RegExp(',', 'g'),
+			set: new Set([1, 1, 2, 3, 4]),
+			map: new Map([[{ name: 'jack' }, 'jack'], ['age', 21]]),
+			array: [1, 2, 3],
+			human: {
+				name: 'noname',
+				children: {
+					name: 'son',
+					age: 1,
+					gender: 'male'
+				}
+			},
+			string: 'hello world',
+			number: 123,
+			boolean: true,
+			symbol: Symbol('symbol'),
+			print: function () {
+				console.log('hello world!');
+			},
+			empty: null,
+		}
+		for (const key in obj) {
+			if (obj.hasOwnProperty(key)) {
+				console.log(typeof obj[key])
+			}
+		}
+		const cloneObj = _.cloneDeep(obj)
+		// console.log(_.cloneDeep(obj))
+	</script>
+</body>
+
+</html>

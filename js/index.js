@@ -9,7 +9,6 @@ Page({
 			html += `
 			<tr>
 				<td>${item.title}</td>
-				<td>${item.type}</td>
 				<td>${item.description}</td>
 				<td>${item.createDate}</td>
 				<td><a href="${item.href}">detail</a></td>

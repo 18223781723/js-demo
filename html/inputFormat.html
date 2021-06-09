@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>inputFormat</title>
+</head>
+
+<body>
+    <label>千位分隔符 <input type="text" id="input" style="font-size: 18px;" placeholder="请输入数字或小数点"></label>
+
+    <script>
+        // 获取dom
+        const inputDom = document.getElementById('input');
+
+        const separator = ',';
+        const reg = new RegExp(separator, 'g');
+        let lastValue = '';
+
+        // 监听input事件
+        inputDom.addEventListener('input', function (e) {
+            let value = inputDom.value;
+            // 直接输入小数点
+            if (value === '.') {
+                inputDom.value = '';
+                return;
+            }
+            let cursorPosition = inputDom.selectionStart;
+            // 如果输入2个小数点或输入分隔符
+            if (value.indexOf('.') !== value.lastIndexOf('.') || e.data === separator) {
+                let leftOfCursor = value.substring(0, cursorPosition - 1);
+                let rightOfCursor = value.substring(cursorPosition);
+                inputDom.value = leftOfCursor + rightOfCursor;
+                inputDom.selectionStart = cursorPosition - 1;
+                inputDom.selectionEnd = cursorPosition - 1;
+                return;
+            } else if (value[value.length - 1] === '.') { // 末尾输入小数点
+                return;
+            }
+            // 可以使用Number.prototype.toLocaleString()代替format函数
+            // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/toLocaleString
+            let formatValue = format(value.replace(reg, ''));
+
+            // 按del键，且删除的字符是分隔符，则光标向后移1位
+            if (e.inputType === 'deleteContentForward' && getDeletedString(lastValue, value) === separator) {
+                cursorPosition += 1;
+            } else {
+                cursorPosition = getCursorPosition(formatValue, value);
+            }
+
+            inputDom.value = formatValue;
+            inputDom.selectionStart = cursorPosition;
+            inputDom.selectionEnd = cursorPosition;
+            lastValue = formatValue;
+        });
+
+        // 格式化输入内容
+        function format(string) {
+            let amount = '';
+            // 小数点左边
+            let leftOfPoint = string;
+            // 小数点右边
+            let rightOfPoint = '';
+            if (string.includes('.')) {
+                [leftOfPoint, rightOfPoint] = string.split('.');
+            }
+            const length = leftOfPoint.length;
+            const n = length % 3;
+            if (length > 3) {
+                for (let i = 0; i < length; i++) {
+                    amount += leftOfPoint[i];
+                    // 判断条件说明:
+                    // 如果leftOfPoint = '1234578'，则n = 2
+                    // 当i = 1，i + 1 = 2 = n，amount = 12,345678
+                    // 当i = 4，i + 1 = 5 > n，(i + 1 - n) % 3 = 0，amount = 12,345,678
+                    if (i + 1 === n || i + 1 > n && i + 1 < length && (i + 1 - n) % 3 == 0) {
+                        amount += separator;
+                    }
+                }
+            } else {
+                amount = leftOfPoint;
+            }
+            if (rightOfPoint) {
+                amount += '.' + rightOfPoint;
+            }
+            return amount;
+        }
+
+        // 获取被删除的字符串
+        function getDeletedString(lastString, string) {
+            let deletedString = '', count = 0;
+            for (let i = 0; i < lastString.length; i++) {
+                if (lastString[i] === string[count]) {
+                    if (deletedString) {
+                        break;
+                    }
+                    count++;
+                } else {
+                    deletedString += lastString[i];
+                }
+            }
+            return deletedString;
+        }
+
+        // 获取光标位置
+        function getCursorPosition(formatString, string) {
+            let cursorPosition = inputDom.selectionStart;
+            let index = cursorPosition - 1;
+            // 光标前一个字符如果是分隔符
+            if (string[index] === separator) {
+                index -= 1;
+            }
+            // 计算光标前一个字符重复了几次
+            let count = 0;
+            for (let i = 0; i < index; i++) {
+                if (string[i] === string[index]) {
+                    count++;
+                }
+            }
+            // 计算光标位置
+            let n = 0;
+            for (let j = 0; j < formatString.length; j++) {
+                if (formatString[j] === string[index]) {
+                    if (n === count) {
+                        cursorPosition = j + 1;
+                        break;
+                    }
+                    n++;
+                }
+            }
+            return cursorPosition;
+        }
+    </script>
+</body>
+
+</html>
