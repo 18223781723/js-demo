@@ -8,63 +8,96 @@
 		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
 	<title>imageLazyLoad</title>
 	<style>
-		body {
+		* {
 			margin: 0;
 			padding: 0;
 		}
 
-		div {
+		ul {
 			max-width: 500px;
 			width: 100%;
 			margin: 0 auto;
+			padding: 15px;
+			list-style: none;
 		}
 
-		img {
-			display: block;
-			width: 100%;
+		li {
+			position: relative;
 			height: 240px;
-			margin-top: 15px;
+			background: #F2F2F2;
+		}
+
+		li:not(:last-child) {
+			margin-bottom: 15px;
+		}
+
+		.loading {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			width: 20px;
+			height: 20px;
+			animation: loading 1s steps(12, end) infinite;
+		}
+
+		@keyframes loading {
+			from {
+				transform: translate(-50%, -50%) rotate(0deg);
+			}
+
+			to {
+				transform: translate(-50%, -50%) rotate(360deg);
+			}
+		}
+
+		.img {
+			width: 100%;
+			height: 100%;
 			object-fit: cover;
 		}
 
-		img[src=""] {
+		.img[src=""] {
 			opacity: 0;
 		}
 	</style>
 </head>
 
 <body>
-	<div>
-		<img src="" alt="" data-src='../images/image1.jpg'>
-		<img src="" alt="" data-src='../images/image2.jpg'>
-		<img src="" alt="" data-src='../images/image3.jpg'>
-		<img src="" alt="" data-src='../images/image4.jpg'>
-		<img src="" alt="" data-src='../images/image5.jpg'>
-		<img src="" alt="" data-src='../images/image1.jpg'>
-		<img src="" alt="" data-src='../images/image2.jpg'>
-		<img src="" alt="" data-src='../images/image3.jpg'>
-		<img src="" alt="" data-src='../images/image4.jpg'>
-		<img src="" alt="" data-src='../images/image5.jpg'>
-	</div>
+	<ul></ul>
 
 	<script>
 		// 获取dom
-		const imgDomList = document.querySelectorAll('img');
+		const ulDom = document.querySelector('ul');
+		const MAX_LENGTH = 10;
+		// 渲染
+		function render() {
+			let html = '';
+			for (let i = 0; i < MAX_LENGTH; i++) {
+				html += `
+				<li>
+					<img class="loading" src="../images/loading.png" alt="">
+					<img class="img" src="" alt="" data-src='../images/image${(i % 5) + 1}.jpg'>
+				</li>`;
+			}
+			ulDom.insertAdjacentHTML('beforeend', html);
+		}
+		render();
+
+		const imgDomList = document.querySelectorAll('.img');
 
 		// 交叉观察
 		const intersectionObserver = new IntersectionObserver((entires) => {
-			entires.forEach((item, index) => {
-				if (item.intersectionRatio > 0) {
+			entires.forEach((entry, index) => {
+				if (entry.isIntersecting) {
 					// 模拟异步加载
 					setTimeout(() => {
-						item.target.src = item.target.dataset.src;
-						intersectionObserver.unobserve(item.target);
-					}, 500);
+						entry.target.src = entry.target.dataset.src;
+						entry.target.previousElementSibling.remove();
+						intersectionObserver.unobserve(entry.target);
+					}, 800);
 				}
 			})
-		}, {
-			threshold: [0.25]
-		});
+		}, { threshold: 0.25 });
 
 		[...imgDomList].forEach((item) => {
 			intersectionObserver.observe(item);

@@ -1,9 +1,15 @@
 const tableList = [
 	{
+		title: 'intersection observer',
+		description: 'Intersection Observer例子',
+		href: 'html/intersectionObserver.html',
+		createDate: '2021-06-10'
+	},
+	{
 		title: 'nav title',
 		description: '使用Intersection Observer实现的标题与导航联动',
 		href: 'html/navTitle.html',
-		createDate: '2021-06-08'
+		createDate: '2021-06-10'
 	},
 	{
 		title: 'infinite scroll',
