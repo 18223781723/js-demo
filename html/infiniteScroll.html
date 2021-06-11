@@ -119,7 +119,7 @@
 			}, 1000);
 		}
 
-		// 交叉观察
+		// 交叉观察器
 		const intersectionObserver = new IntersectionObserver((entries) => {
 			if (entries[0].isIntersecting && !loading && id < MAX_LENGTH) {
 				loadmore();

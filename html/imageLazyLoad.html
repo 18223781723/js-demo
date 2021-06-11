@@ -14,6 +14,7 @@
 		}
 
 		ul {
+			box-sizing: border-box;
 			max-width: 500px;
 			width: 100%;
 			margin: 0 auto;
@@ -85,7 +86,7 @@
 
 		const imgDomList = document.querySelectorAll('.img');
 
-		// 交叉观察
+		// 交叉观察器
 		const intersectionObserver = new IntersectionObserver((entires) => {
 			entires.forEach((entry, index) => {
 				if (entry.isIntersecting) {
@@ -94,7 +95,7 @@
 						entry.target.src = entry.target.dataset.src;
 						entry.target.previousElementSibling.remove();
 						intersectionObserver.unobserve(entry.target);
-					}, 800);
+					}, 600);
 				}
 			})
 		}, { threshold: 0.25 });

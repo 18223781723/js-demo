@@ -56,22 +56,21 @@
 		const pDom = document.querySelector('p');
 		const boxDom = document.querySelector('.box');
 
-		// 交叉观察
+		// 阈值列表
+		const thresholdList = [];
+		for (let i = 0; i <= 100; i += 4) {
+			thresholdList.push(i / 100);
+		}
+
+		// 交叉观察器
 		const intersectionObserver = new IntersectionObserver((entries) => {
 			const intersectionRatio = entries[0].intersectionRatio;
 			let text = '隐藏';
-			if (intersectionRatio === 1) {
-				text = '完全显示';
-			} else if (intersectionRatio > 0.75) {
-				text = '显示¾';
-			} else if (intersectionRatio > 0.5) {
-				text = '显示½';
-			} else if (intersectionRatio > 0.25) {
-				text = '显示¼';
+			if (entries[0].isIntersecting) {
+				text = Math.trunc(intersectionRatio * 100) + '%';
 			}
-			console.log(intersectionRatio)
 			pDom.innerHTML = text;
-		}, { threshold: [0, 0.25, 0.5, 0.75, 1] });
+		}, { threshold: thresholdList });
 		intersectionObserver.observe(boxDom);
 	</script>
 </body>

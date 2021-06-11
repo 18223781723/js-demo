@@ -168,33 +168,34 @@
 			}
 		});
 
-		// 交叉观察
+		// 交叉观察器
 		const intersectionObserver = new IntersectionObserver((entries) => {
-			const visibleH1DomList = [];
-			let nearestH1Dom;
+			let visibleH1Dom, nearestH1Dom, i;
 			for (const h1 of h1DomList) {
 				const rect = h1.getBoundingClientRect();
-				// 找到所有在屏幕中可见的标题
-				if (rect.top <= window.innerHeight && rect.bottom >= 0) {
-					visibleH1DomList.push(h1);
-				}
-				// 找到最后一个被滚动条卷走的标题
+				// 找到最近一个被滚动条卷走的标题
 				if (rect.bottom < 0) {
 					nearestH1Dom = h1;
-				}
-				let i;
-				if (visibleH1DomList.length > 0) {
-					i = Number(visibleH1DomList[0].dataset.index);
 				} else {
-					i = Number(nearestH1Dom.dataset.index);
+					// 找到第一个可见的标题
+					if (rect.top <= window.innerHeight) {
+						visibleH1Dom = h1;
+						break;
+					}
 				}
-				const activeDom = document.querySelector('.active');
-				if (activeDom) {
-					activeDom.className = '';
-				}
-				liDomList[i].className = 'active';
 			}
-
+			// 高亮页面中第一个可见标题
+			if (visibleH1Dom) {
+				i = Number(visibleH1Dom.dataset.index);
+			} else {
+				// 高亮最近一个被卷走的标题
+				i = Number(nearestH1Dom.dataset.index)
+			}
+			const activeDom = document.querySelector('.active');
+			if (activeDom) {
+				activeDom.className = '';
+			}
+			liDomList[i].className = 'active';
 		});
 
 		[...h1DomList].forEach((item) => {
