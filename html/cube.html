@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport"
+		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>cube</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		.container {
+			perspective: 800px;
+			perspective-origin: center -200px;
+		}
+
+		.cube {
+			position: relative;
+			width: 150px;
+			height: 150px;
+			margin: calc(50vh - 75px) auto;
+			transform-style: preserve-3d;
+			animation: rotate 8s linear infinite;
+		}
+
+		@keyframes rotate {
+			0% {
+				transform: rotateX(0) rotateY(0);
+			}
+
+			50% {
+				transform: rotateX(360deg) rotateY(0);
+			}
+
+			100% {
+				transform: rotateX(360deg) rotateY(360deg);
+			}
+		}
+
+		/* 重叠在一起 */
+		.cube div {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 150px;
+			height: 150px;
+			background-size: auto 150px;
+		}
+
+		.front {
+			background-image: url(../images/image1.jpg);
+			background-position: 55%;
+			transform: translateZ(75px);
+		}
+
+		.back {
+			background-position: 70%;
+			background-image: url(../images/image2.jpg);
+			transform: translateZ(-75px) rotateY(180deg);
+		}
+
+		.left {
+			background-position: 40%;
+			background-image: url(../images/image3.jpg);
+			transform: translateX(-75px) rotateY(-90deg);
+		}
+
+		.right {
+			background-position: 60%;
+			background-image: url(../images/image4.jpg);
+			transform: translateX(75px) rotateY(90deg);
+		}
+
+		.up {
+			background-position: 65%;
+			background-image: url(../images/image5.jpg);
+			transform: translateY(-75px) rotateX(90deg);
+		}
+
+		.down {
+			background-position: 50%;
+			background-image: url(../images/image6.jpg);
+			transform: translateY(75px) rotateX(-90deg);
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<div class="cube">
+			<div class="front"></div>
+			<div class="back"></div>
+			<div class="left"></div>
+			<div class="right"></div>
+			<div class="up"></div>
+			<div class="down"></div>
+		</div>
+	</div>
+
+</body>
+
+</html>

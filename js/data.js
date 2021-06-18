@@ -1,5 +1,11 @@
 const tableList = [
 	{
+		title: 'cube',
+		description: 'CSS3实现立方体',
+		href: 'html/cube.html',
+		createDate: '2021-06-18'
+	},
+	{
 		title: 'intersection observer',
 		description: 'Intersection Observer例子',
 		href: 'html/intersectionObserver.html',
