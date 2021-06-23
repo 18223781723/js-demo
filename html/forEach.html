@@ -1,38 +1,42 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>forEach</title>
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
 </head>
+
 <body>
-<script>
-    /**
-     * forEach实现原理
-     */
-    let numbers = [65, 44, 12, 4, 83, 19, 72];
+    <script>
+        /**
+         * forEach实现原理
+         */
+        let numbers = [65, 44, 12, 4, 83, 19, 72];
 
-    // forEach用法
-    numbers.forEach(function (currentValue, index, arr) {
-        console.log('currentValue:' + currentValue, 'index:' + index, 'arr:' + arr);
-    });
+        // forEach用法
+        numbers.forEach(function (currentValue, index, arr) {
+            console.log('currentValue:' + currentValue, 'index:' + index, 'arr:' + arr);
+        });
 
-    // 实现myEach
-    Array.prototype.myEach = function (callback) {
-        if (typeof callback !== 'function') {
-            throw 'callback is not a function'
-        }
-        // this指向调用myEach的数组
-        for (let i = 0; i < this.length; i++) {
-            callback(this[i], i, this);
-        }
-    };
-    console.log('myEach');
-    numbers.myEach(function (currentValue, index, arr) {
-        console.log('currentValue:' + currentValue, 'index:' + index, 'arr:' + arr);
-    });
-</script>
+        // 实现myEach
+        Array.prototype.myEach = function (callback) {
+            if (typeof callback !== 'function') {
+                throw 'callback is not a function'
+            }
+            // this指向调用myEach的数组
+            for (let i = 0; i < this.length; i++) {
+                callback(this[i], i, this);
+            }
+        };
+        console.log('myEach');
+        numbers.myEach(function (currentValue, index, arr) {
+            console.log('currentValue:' + currentValue, 'index:' + index, 'arr:' + arr);
+        });
+    </script>
 </body>
+
 </html>

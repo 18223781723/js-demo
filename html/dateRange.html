@@ -4,9 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>日期区间</title>
+    <title>dateRange</title>
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
     <style>
         * {
             margin: 0;
@@ -56,161 +57,161 @@
 
 <body>
 
-<script>
-    /**
-     * 原生javascript实现的选择日期区间功能
-     */
-    let calendar = {
-        data: {
-            date: new Date(),
-            thisYear: new Date().getFullYear(), // 以四位数字返回年份
-            thisMonth: new Date().getMonth(), // 返回月份 (0 ~ 11),一月为 0,二月为 1,以此类推
-            today: new Date().getDate(), // 返回一个月中的某一天 (1 ~ 31)
-            wList: ['日', '一', '二', '三', '四', '五', '六'],
-            range: 6, // 渲染多少个月
-            index: 0,
-        },
-        /* 初始化执行 */
-        init: function () {
-            this.setDate();
-            for (let i = 0; i < this.data.range; i++) {
-                this.next();
-            }
-            // body事件委托
-            document.querySelector('body').onclick = this.dateClick.bind(this);
-        },
-        /* 设置日期 */
-        setDate: function (year = new Date().getFullYear(), month = new Date().getMonth()) {
-            this.data.date.setFullYear(year);
-            this.data.date.setMonth(month);
-            this.data.date.setDate(1); // 调整到当月第一天
-            let firstDayOfWeek = this.data.date.getDay();
-            let options = {
-                year: year, // 以四位数字返回年份
-                month: month, // 返回月份 (0 ~ 11),一月为 0,二月为 1,以此类推
-                firstDayOfWeek: firstDayOfWeek, // 当月第一天星期几
-            };
-            this.render(options);
-        },
+    <script>
         /**
-         * 渲染日期
-         * @param options.year 渲染的年份
-         * @param options.month 渲染的月份
-         * @param options.firstDayOfWeek 当月第一天星期几
+         * 原生javascript实现的选择日期区间功能
          */
-        render: function (options) {
-            let mList = [31, 28 + this.isLeapYear(options.year), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-            let html = '', total = mList[options.month], isToday = false, dayOfMonth = 0;
+        let calendar = {
+            data: {
+                date: new Date(),
+                thisYear: new Date().getFullYear(), // 以四位数字返回年份
+                thisMonth: new Date().getMonth(), // 返回月份 (0 ~ 11),一月为 0,二月为 1,以此类推
+                today: new Date().getDate(), // 返回一个月中的某一天 (1 ~ 31)
+                wList: ['日', '一', '二', '三', '四', '五', '六'],
+                range: 6, // 渲染多少个月
+                index: 0,
+            },
+            /* 初始化执行 */
+            init: function () {
+                this.setDate();
+                for (let i = 0; i < this.data.range; i++) {
+                    this.next();
+                }
+                // body事件委托
+                document.querySelector('body').onclick = this.dateClick.bind(this);
+            },
+            /* 设置日期 */
+            setDate: function (year = new Date().getFullYear(), month = new Date().getMonth()) {
+                this.data.date.setFullYear(year);
+                this.data.date.setMonth(month);
+                this.data.date.setDate(1); // 调整到当月第一天
+                let firstDayOfWeek = this.data.date.getDay();
+                let options = {
+                    year: year, // 以四位数字返回年份
+                    month: month, // 返回月份 (0 ~ 11),一月为 0,二月为 1,以此类推
+                    firstDayOfWeek: firstDayOfWeek, // 当月第一天星期几
+                };
+                this.render(options);
+            },
+            /**
+             * 渲染日期
+             * @param options.year 渲染的年份
+             * @param options.month 渲染的月份
+             * @param options.firstDayOfWeek 当月第一天星期几
+             */
+            render: function (options) {
+                let mList = [31, 28 + this.isLeapYear(options.year), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                let html = '', total = mList[options.month], isToday = false, dayOfMonth = 0;
 
-            html = '<div class="month-box">'
-                + '<p class="title">' + options.year + '-' + this.fillZero(options.month + 1) + '</p>'
-                + '<div class="week-list">';
-            for (let item of this.data.wList) {
-                html += '<p class="week-item">' + item + '</p>';
-            }
-            html += '</div>';
+                html = '<div class="month-box">'
+                    + '<p class="title">' + options.year + '-' + this.fillZero(options.month + 1) + '</p>'
+                    + '<div class="week-list">';
+                for (let item of this.data.wList) {
+                    html += '<p class="week-item">' + item + '</p>';
+                }
+                html += '</div>';
 
-            html += '<div class="date-list">';
-            for (let i = 0; i < 42; i++) {
-                isToday = false;
-                if (i >= options.firstDayOfWeek && i < total + options.firstDayOfWeek) {
-                    dayOfMonth = i - options.firstDayOfWeek + 1;
-                    if (this.data.thisYear === options.year &&
-                        this.data.thisMonth === options.month &&
-                        this.data.today === dayOfMonth) isToday = true;
-                    if (dayOfMonth < this.data.today && this.data.thisYear === options.year && this.data.thisMonth === options.month) {
-                        html += '<p class="date-item c-999">' + dayOfMonth + '</p>';
+                html += '<div class="date-list">';
+                for (let i = 0; i < 42; i++) {
+                    isToday = false;
+                    if (i >= options.firstDayOfWeek && i < total + options.firstDayOfWeek) {
+                        dayOfMonth = i - options.firstDayOfWeek + 1;
+                        if (this.data.thisYear === options.year &&
+                            this.data.thisMonth === options.month &&
+                            this.data.today === dayOfMonth) isToday = true;
+                        if (dayOfMonth < this.data.today && this.data.thisYear === options.year && this.data.thisMonth === options.month) {
+                            html += '<p class="date-item c-999">' + dayOfMonth + '</p>';
+                        } else {
+                            html += '<p class="date-item" data-index="' + (this.data.index++) + '" data-date="'
+                                + (options.year + '-' + this.fillZero(options.month + 1) + '-' + this.fillZero(dayOfMonth)) + '">'
+                                + (isToday ? "今天" : dayOfMonth) + '</p>';
+                        }
                     } else {
-                        html += '<p class="date-item" data-index="' + (this.data.index++) + '" data-date="'
-                            + (options.year + '-' + this.fillZero(options.month + 1) + '-' + this.fillZero(dayOfMonth)) + '">'
-                            + (isToday ? "今天" : dayOfMonth) + '</p>';
+                        html += '<p class="date-item"></p>';
                     }
+                }
+                html += '</div>';
+
+                document.querySelector('body').innerHTML += html;
+            },
+            /* 判断是否闰年 */
+            isLeapYear: function (year) {
+                if (year % 4 === 0 && year % 100 !== 0 || year % 400 === 0) {
+                    return 1;
                 } else {
-                    html += '<p class="date-item"></p>';
+                    return 0;
                 }
-            }
-            html += '</div>';
-
-            document.querySelector('body').innerHTML += html;
-        },
-        /* 判断是否闰年 */
-        isLeapYear: function (year) {
-            if (year % 4 === 0 && year % 100 !== 0 || year % 400 === 0) {
-                return 1;
-            } else {
-                return 0;
-            }
-        },
-        /* 补0 */
-        fillZero: function (value) {
-            let result = value;
-            if (value < 10) result = '0' + value;
-            return result;
-        },
-        /* 用于单个日历切换上月 */
-        prev: function () {
-            let year = this.data.date.getFullYear();
-            let month = this.data.date.getMonth();
-            month--;
-            if (month < 0) {
-                month = 11;
-                year -= 1;
-            }
-            this.setDate(year, month);
-        },
-        /* 用于单个日历切换下月 */
-        next: function () {
-            let year = this.data.date.getFullYear();
-            let month = this.data.date.getMonth();
-            month++;
-            if (month > 11) {
-                month = 0;
-                year += 1;
-            }
-            this.setDate(year, month);
-        },
-        /* 绑定点击事件 */
-        dateClick: function (e) {
-            let target = e.target;
-            if (target.dataset.date === undefined) return;
-            let startAndEnd = document.querySelectorAll('.date-item.active');
-            if (target.className === 'date-item active' && startAndEnd.length === 1) return;
-
-            if (startAndEnd.length === 2) this.clear();
-            if (document.querySelectorAll('.date-item.active').length < 2) target.className = 'date-item active';
-            if (document.querySelectorAll('.date-item.active').length === 2) this.loop();
-
-
-        },
-        /* 清除标记 */
-        clear: function () {
-            let startAndEnd = document.querySelectorAll('.date-item.active');
-            startAndEnd[0].className = 'date-item';
-            startAndEnd[1].className = 'date-item';
-            let list = document.querySelectorAll('.date-item.range');
-            for (let item of list) {
-                item.className = 'date-item';
-            }
-        },
-        /* 循环标记日期区间 */
-        loop: function () {
-            let startAndEnd = document.querySelectorAll('.date-item.active');
-            let startIndex = Number(startAndEnd[0].dataset.index);
-            let endIndex = Number(startAndEnd[1].dataset.index);
-            let list = document.querySelectorAll('.date-item[data-date]');
-            for (let i = startIndex + 1; i < endIndex; i++) {
-                let now = new Date(list[i].dataset.date);
-                if (now > new Date(startAndEnd[0].dataset.date) &&
-                    now < new Date(startAndEnd[1].dataset.date)) {
-                    list[i].className = 'date-item range';
+            },
+            /* 补0 */
+            fillZero: function (value) {
+                let result = value;
+                if (value < 10) result = '0' + value;
+                return result;
+            },
+            /* 用于单个日历切换上月 */
+            prev: function () {
+                let year = this.data.date.getFullYear();
+                let month = this.data.date.getMonth();
+                month--;
+                if (month < 0) {
+                    month = 11;
+                    year -= 1;
                 }
+                this.setDate(year, month);
+            },
+            /* 用于单个日历切换下月 */
+            next: function () {
+                let year = this.data.date.getFullYear();
+                let month = this.data.date.getMonth();
+                month++;
+                if (month > 11) {
+                    month = 0;
+                    year += 1;
+                }
+                this.setDate(year, month);
+            },
+            /* 绑定点击事件 */
+            dateClick: function (e) {
+                let target = e.target;
+                if (target.dataset.date === undefined) return;
+                let startAndEnd = document.querySelectorAll('.date-item.active');
+                if (target.className === 'date-item active' && startAndEnd.length === 1) return;
+
+                if (startAndEnd.length === 2) this.clear();
+                if (document.querySelectorAll('.date-item.active').length < 2) target.className = 'date-item active';
+                if (document.querySelectorAll('.date-item.active').length === 2) this.loop();
+
+
+            },
+            /* 清除标记 */
+            clear: function () {
+                let startAndEnd = document.querySelectorAll('.date-item.active');
+                startAndEnd[0].className = 'date-item';
+                startAndEnd[1].className = 'date-item';
+                let list = document.querySelectorAll('.date-item.range');
+                for (let item of list) {
+                    item.className = 'date-item';
+                }
+            },
+            /* 循环标记日期区间 */
+            loop: function () {
+                let startAndEnd = document.querySelectorAll('.date-item.active');
+                let startIndex = Number(startAndEnd[0].dataset.index);
+                let endIndex = Number(startAndEnd[1].dataset.index);
+                let list = document.querySelectorAll('.date-item[data-date]');
+                for (let i = startIndex + 1; i < endIndex; i++) {
+                    let now = new Date(list[i].dataset.date);
+                    if (now > new Date(startAndEnd[0].dataset.date) &&
+                        now < new Date(startAndEnd[1].dataset.date)) {
+                        list[i].className = 'date-item range';
+                    }
+                }
+                console.log('开始时间:' + startAndEnd[0].dataset.date);
+                console.log('结束时间:' + startAndEnd[1].dataset.date);
             }
-            console.log('开始时间:' + startAndEnd[0].dataset.date);
-            console.log('结束时间:' + startAndEnd[1].dataset.date);
-        }
-    };
-    calendar.init();
-</script>
+        };
+        calendar.init();
+    </script>
 </body>
 
 </html>

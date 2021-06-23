@@ -1,11 +1,13 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>debounce</title>
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
     <style>
         * {
             margin: 0;
@@ -19,58 +21,60 @@
         }
     </style>
 </head>
-<body>
-<div class="box">
-    <h1>鼠标移动区域</h1>
-</div>
-<h2>未防抖次数：0</h2>
-<h2>防抖后次数：0</h2>
 
-<script>
-    /**
-     * 原生javascript实现debounce
-     */
+<body>
+    <div class="box">
+        <h1>鼠标移动区域</h1>
+    </div>
+    <h2>未防抖次数：0</h2>
+    <h2>防抖后次数：0</h2>
+
+    <script>
+        /**
+         * 原生javascript实现debounce
+         */
 
         // 获取元素
-    let box = document.querySelector('.box');
-    let h2s = document.querySelectorAll('h2');
+        let box = document.querySelector('.box');
+        let h2s = document.querySelectorAll('h2');
 
-    /**
-     * 防抖函数
-     * @param func 回调函数
-     * @param delay 延时
-     * @param param 参数
-     * @returns {function(...[*]=)}
-     */
-    function debounce(func, delay, params) {
-        // 计时器
-        let timer = null;
-        return function () {
-            // 修复this指向，此处指向box
-            let context = this;
-            // 保存event参数
-            let args = arguments;
-            if (timer) clearTimeout(timer);
-            timer = setTimeout(function () {
-                // 展开剩余参数
-                func.call(context, args, ...params);
-            }, delay);
+        /**
+         * 防抖函数
+         * @param func 回调函数
+         * @param delay 延时
+         * @param param 参数
+         * @returns {function(...[*]=)}
+         */
+        function debounce(func, delay, params) {
+            // 计时器
+            let timer = null;
+            return function () {
+                // 修复this指向，此处指向box
+                let context = this;
+                // 保存event参数
+                let args = arguments;
+                if (timer) clearTimeout(timer);
+                timer = setTimeout(function () {
+                    // 展开剩余参数
+                    func.call(context, args, ...params);
+                }, delay);
+            }
         }
-    }
 
-    // 绑定鼠标移动事件
-    let i = 0;
-    box.addEventListener('mousemove', debounce(function () {
-        i++;
-        h2s[1].innerHTML = '防抖后次数：' + i;
-        console.log(this, arguments);
-    }, 300, [1, 'boy']));
+        // 绑定鼠标移动事件
+        let i = 0;
+        box.addEventListener('mousemove', debounce(function () {
+            i++;
+            h2s[1].innerHTML = '防抖后次数：' + i;
+            console.log(this, arguments);
+        }, 300, [1, 'boy']));
 
-    let count = 0;
-    box.addEventListener('mousemove', function () {
-        count++;
-        h2s[0].innerHTML = '未防抖次数：' + count;
-    });
-</script>
+        let count = 0;
+        box.addEventListener('mousemove', function () {
+            count++;
+            h2s[0].innerHTML = '未防抖次数：' + count;
+        });
+    </script>
 </body>
+
 </html>

@@ -1,162 +1,164 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>slider</title>
-</head>
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-    }
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
 
-    .content {
-        position: relative;
-        display: flex;
-        align-items: center;
-        margin: 0 15px;
-        user-select: none;
-    }
+        .content {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin: 0 15px;
+            user-select: none;
+        }
 
-    .bar {
-        position: relative;
-        flex: 1;
-        height: 4px;
-        border-radius: 5px;
-        background: #e4e7ed;
-        border-top: 8px solid #FFF;
-        border-bottom: 8px solid #FFF;
-        cursor: pointer;
-    }
+        .bar {
+            position: relative;
+            flex: 1;
+            height: 4px;
+            border-radius: 5px;
+            background: #e4e7ed;
+            border-top: 8px solid #FFF;
+            border-bottom: 8px solid #FFF;
+            cursor: pointer;
+        }
 
-    .progress {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 0;
-        height: 4px;
-        border-radius: 5px;
-        background: #409eff;
-    }
+        .progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 4px;
+            border-radius: 5px;
+            background: #409eff;
+        }
 
-    .dot {
-        position: absolute;
-        top: 0;
-        left: -10px;
-        width: 18px;
-        height: 18px;
-        background: transparent;
-        border: 1px solid #409eff;
-        border-radius: 50%;
-        pointer-events: none;
-    }
+        .dot {
+            position: absolute;
+            top: 0;
+            left: -10px;
+            width: 18px;
+            height: 18px;
+            background: transparent;
+            border: 1px solid #409eff;
+            border-radius: 50%;
+            pointer-events: none;
+        }
 
-    .value {
-        padding: 15px;
-    }
-</style>
+        .value {
+            padding: 15px;
+        }
+    </style>
 </head>
 
 <body>
-<p class="value">0%</p>
-<div class="content">
-    <div class="bar">
-        <div class="progress"></div>
+    <p class="value">0%</p>
+    <div class="content">
+        <div class="bar">
+            <div class="progress"></div>
+        </div>
+        <div class="dot"></div>
     </div>
-    <div class="dot"></div>
-</div>
-<h4 style="margin-top: 30px;">原生input type="range"的效果如下，不同浏览器显示可能会有差异</h4>
-<input type="range">
-<script>
-    /**
-     * 原生javascript实现slider，支持移动端、pc端
-     */
+    <h4 style="margin-top: 30px;">原生input type="range"的效果如下，不同浏览器显示可能会有差异</h4>
+    <input type="range">
+    <script>
+        /**
+         * 原生javascript实现slider，支持移动端、pc端
+         */
         // 获取元素
-    let content = document.querySelector('.content');
-    let bar = document.querySelector('.bar');
-    let progress = document.querySelector('.progress');
-    let dot = document.querySelector('.dot');
-    let p = document.querySelector('.value');
+        let content = document.querySelector('.content');
+        let bar = document.querySelector('.bar');
+        let progress = document.querySelector('.progress');
+        let dot = document.querySelector('.dot');
+        let p = document.querySelector('.value');
 
-    // offsetWidth 获取当前节点的宽度 （width + border + padding）
-    // 总长度减去原点覆盖的部分
-    let length = bar.offsetWidth;
-    let dotR = dot.offsetWidth / 2;
+        // offsetWidth 获取当前节点的宽度 （width + border + padding）
+        // 总长度减去原点覆盖的部分
+        let length = bar.offsetWidth;
+        let dotR = dot.offsetWidth / 2;
 
-    function pcDrag() {
-        // 鼠标按下标识
-        let isMousedown = false;
+        function pcDrag() {
+            // 鼠标按下标识
+            let isMousedown = false;
 
-        // 鼠标按下事件
-        bar.onmousedown = function (e) {
-            isMousedown = true;
+            // 鼠标按下事件
+            bar.onmousedown = function (e) {
+                isMousedown = true;
 
-            let offsetX = e.clientX - content.offsetLeft;
-            dot.style.left = offsetX - dotR + 'px';
-            progress.style.width = offsetX + 'px';
-            p.innerHTML = Math.ceil(offsetX / length * 100) + '%';
-        };
+                let offsetX = e.clientX - content.offsetLeft;
+                dot.style.left = offsetX - dotR + 'px';
+                progress.style.width = offsetX + 'px';
+                p.innerHTML = Math.ceil(offsetX / length * 100) + '%';
+            };
 
-        // 鼠标移动事件
-        document.onmousemove = function (e) {
-            if (isMousedown === false) return;
+            // 鼠标移动事件
+            document.onmousemove = function (e) {
+                if (isMousedown === false) return;
 
-            let offsetX = e.clientX - content.offsetLeft;
+                let offsetX = e.clientX - content.offsetLeft;
 
-            // 边界判断
-            if (offsetX < 0) {
-                offsetX = 0;
-            } else if (offsetX >= length) {
-                offsetX = length;
-            }
+                // 边界判断
+                if (offsetX < 0) {
+                    offsetX = 0;
+                } else if (offsetX >= length) {
+                    offsetX = length;
+                }
 
-            dot.style.left = offsetX - dotR + 'px';
-            progress.style.width = offsetX + 'px';
-            p.innerHTML = Math.ceil(offsetX / length * 100) + '%';
-        };
+                dot.style.left = offsetX - dotR + 'px';
+                progress.style.width = offsetX + 'px';
+                p.innerHTML = Math.ceil(offsetX / length * 100) + '%';
+            };
 
-        // 鼠标松开事件
-        document.onmouseup = function () {
-            isMousedown = false;
-        };
-    }
-
-    function mobileDrag() {
-        // 触摸开始事件
-        bar.ontouchstart = function (e) {
-            let offsetX = e.touches[0].clientX - content.offsetLeft;
-            dot.style.left = offsetX - dotR + 'px';
-            progress.style.width = offsetX + 'px';
-            p.innerHTML = Math.ceil(offsetX / length * 100) + '%';
-        };
-
-        // 触摸移动事件
-        bar.ontouchmove = function (e) {
-            let offsetX = e.touches[0].clientX - content.offsetLeft;
-
-            // 边界判断
-            if (offsetX < 0) {
-                offsetX = 0;
-            } else if (offsetX >= length) {
-                offsetX = length;
-            }
-
-            dot.style.left = offsetX - dotR + 'px';
-            progress.style.width = offsetX + 'px';
-            p.innerHTML = Math.ceil(offsetX / length * 100) + '%';
+            // 鼠标松开事件
+            document.onmouseup = function () {
+                isMousedown = false;
+            };
         }
-    }
 
-    // 移动端拖拽
-    mobileDrag();
-    // pc端拖拽
-    pcDrag();
+        function mobileDrag() {
+            // 触摸开始事件
+            bar.ontouchstart = function (e) {
+                let offsetX = e.touches[0].clientX - content.offsetLeft;
+                dot.style.left = offsetX - dotR + 'px';
+                progress.style.width = offsetX + 'px';
+                p.innerHTML = Math.ceil(offsetX / length * 100) + '%';
+            };
 
-</script>
+            // 触摸移动事件
+            bar.ontouchmove = function (e) {
+                let offsetX = e.touches[0].clientX - content.offsetLeft;
+
+                // 边界判断
+                if (offsetX < 0) {
+                    offsetX = 0;
+                } else if (offsetX >= length) {
+                    offsetX = length;
+                }
+
+                dot.style.left = offsetX - dotR + 'px';
+                progress.style.width = offsetX + 'px';
+                p.innerHTML = Math.ceil(offsetX / length * 100) + '%';
+            }
+        }
+
+        // 移动端拖拽
+        mobileDrag();
+        // pc端拖拽
+        pcDrag();
+
+    </script>
 </body>
 
 </body>
+
 </html>

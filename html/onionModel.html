@@ -1,51 +1,55 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>洋葱模型</title>
+    <title>onionModel</title>
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
 </head>
+
 <body>
-<script>
-    // 洋葱模型顾名思义，指的是方法的执行像洋葱一样，一层一层往里执行，直到中心点后，再一层一层往外出来。
-    const middleware = [];
-    middleware.push(function (next) {
-        console.log(1);
-        next();
-        console.log(4);
-    });
-    middleware.push(function (next) {
-        console.log(2);
-        next();
-        console.log(5);
-    });
-    middleware.push(function (next) {
-        console.log(3);
-        next();
-        console.log(6);
-    });
+    <script>
+        // 洋葱模型顾名思义，指的是方法的执行像洋葱一样，一层一层往里执行，直到中心点后，再一层一层往外出来。
+        const middleware = [];
+        middleware.push(function (next) {
+            console.log(1);
+            next();
+            console.log(4);
+        });
+        middleware.push(function (next) {
+            console.log(2);
+            next();
+            console.log(5);
+        });
+        middleware.push(function (next) {
+            console.log(3);
+            next();
+            console.log(6);
+        });
 
-    function compose(middleware) {
-        return function () {
-            function dispatch(i) {
-                const fn = middleware[i];
-                if (typeof fn === 'function') {
-                    i++;
-                    const next = function () {
-                        dispatch(i);
-                    };
-                    fn(next);
+        function compose(middleware) {
+            return function () {
+                function dispatch(i) {
+                    const fn = middleware[i];
+                    if (typeof fn === 'function') {
+                        i++;
+                        const next = function () {
+                            dispatch(i);
+                        };
+                        fn(next);
+                    }
                 }
+
+                dispatch(0);
             }
-
-            dispatch(0);
         }
-    }
 
-    // 调用
-    compose(middleware)();
-</script>
+        // 调用
+        compose(middleware)();
+    </script>
 </body>
+
 </html>
