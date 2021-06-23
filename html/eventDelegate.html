@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>事件委托</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #EFF0F2
+        }
+
+        .list {
+            list-style: none;
+        }
+
+        .item {
+            padding: 15px;
+            background: #FFF;
+        }
+
+        .item:not(:last-child) {
+            margin-bottom: 5px;
+        }
+
+        .row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .row div {
+            flex: 1;
+        }
+
+        .name {
+            font-size: 14px;
+            line-height: 20px;
+            font-weight: bold;
+        }
+
+        .time {
+            font-size: 12px;
+            line-height: 16px;
+            color: #999;
+        }
+
+        .count {
+            font-size: 14px;
+            line-height: 20px;
+        }
+
+        .img-box {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 5px 0 15px 0;
+            margin-right: -10px;
+        }
+
+        .img-box img {
+            width: 100px;
+            height: 100px;
+            margin: 10px 10px 0 0;
+            object-fit: cover;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .button-group button {
+            width: 56px;
+            height: 24px;
+            border: none;
+            background: transparent;
+        }
+    </style>
+</head>
+
+<body>
+    <ul class="list"></ul>
+    <script>
+        /**
+         * 原生javascript实现事件委托
+         */
+        // 获取dom
+        const ulDom = document.querySelector('.list');
+        // 渲染dom
+        function render() {
+            let html = '';
+            for (let i = 0; i < 10; i++) {
+                html += `<li class="item">
+                    <div class="row">
+                        <img class="avatar" src="../images/image1.jpg" alt="">
+                        <div>
+                            <p class="name">白老板${i + 1}</p>
+                            <p class="time">2021-06-21 11:25:42</p>
+                        </div>
+                        <p class="count">列表项点击次数<span>0</span></p>
+                    </div>
+                    <p>哇，这也太好看了吧！</p>
+                    <div class="img-box">
+                        <img src="../images/image1.jpg" alt="">
+                        <img src="../images/image2.jpg" alt="">
+                        <img src="../images/image3.jpg" alt="">
+                    </div>
+                    <div class="button-group">
+                        <button type="button" data-count="0" data-text="点赞">点赞0</button>
+                        <button type="button" data-count="0" data-text="评论">评论0</button>
+                        <button type="button" data-count="0" data-text="转发">转发0</button>
+                    </div>
+                </li>`;
+            }
+            ulDom.insertAdjacentHTML('beforeend', html);
+        }
+        render();
+
+        // 绑定事件
+        ulDom.addEventListener('click', delegate('li.item,.button-group button', function (e) {
+            if (e.triggerTarget.tagName === 'BUTTON') {
+                let count = Number(e.triggerTarget.dataset.count) + 1;
+                let text = e.triggerTarget.dataset.text;
+                e.triggerTarget.innerHTML = text + count;
+                e.triggerTarget.dataset.count = count;
+                e.stopPropagation();
+            } else if (e.triggerTarget.tagName === 'LI') {
+                const span = e.triggerTarget.querySelector('.count span');
+                span.innerHTML = Number(span.innerHTML) + 1;
+            }
+            console.log(e.triggerTarget);
+        }));
+
+
+        /**
+         * 事件委托原理
+         * @param selector string
+         * @param func function
+         * @returns
+         */
+        function delegate(selector, func) {
+            return function (event) {
+                if (event.target === this) return;
+                let target = event.target;
+                const selectorList = selector.split(',');
+                while (true) {
+                    for (let i = 0; i < selectorList.length; i++) {
+                        // 判断元素是否被指定的选择器字符串选择
+                        // https://developer.mozilla.org/zh-CN/docs/Web/API/Element/matches
+                        if (target.matches(selectorList[i])) {
+                            // 给event对象添加triggerTarget属性，表示触发事件的元素
+                            event.triggerTarget = target;
+                            // 删除已匹配的选择器，减少不必要的循环
+                            selectorList.splice(i, 1);
+                            // this指向事件委托元素
+                            func.call(this, event);
+                            break;
+                        }
+                    }
+                    target = target.parentNode;
+                    // 阻止冒泡
+                    if (this === target || event.cancelBubble) break;
+                }
+            }
+        }
+
+    </script>
+</body>
+
+</html>

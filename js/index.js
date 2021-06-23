@@ -16,7 +16,7 @@ Page({
 		}
 		document.getElementById('content').innerHTML = html;
 	},
-})
+});
 function Page(options) {
 	options.onLoad();
 }

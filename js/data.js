@@ -42,9 +42,9 @@ const tableList = [
 		createDate: '2021-05-12'
 	},
 	{
-		title: 'event delegation',
+		title: 'event delegate',
 		description: '事件委托原理',
-		href: 'html/eventDelegation.html',
+		href: 'html/eventDelegate.html',
 		createDate: '2020-11-03'
 	},
 	{
