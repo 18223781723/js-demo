@@ -83,13 +83,14 @@
 	<script>
 		const ulDom = document.getElementById('list');
 		const loadmoreDom = document.getElementById('loadmore');
-		const MAX_LENGTH = 100;
+		const MAX_LENGTH = 48;
+		const LIMIT = 12;
 		let loading = false;
 		let id = 1;
 		// 渲染dom
 		function render() {
 			let html = '';
-			for (let i = 0; i < 20; i++) {
+			for (let i = 0; i < LIMIT; i++) {
 				html += `
 				<li>
 					<img src="../images/image1.jpg" alt="">

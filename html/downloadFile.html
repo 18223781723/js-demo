@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport"
+		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>downloadFile</title>
+	<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		.container {
+			width: 435px;
+			padding: 15px;
+		}
+
+		input {
+			padding: 0 5px;
+			outline: none;
+		}
+
+		.item {
+			display: flex;
+			align-items: center;
+			margin-bottom: 15px;
+		}
+
+		.item span {
+			width: 70px;
+			margin-right: 15px;
+			font-size: 14px;
+			line-height: 20px;
+			text-align: right;
+		}
+
+		.item input {
+			flex: 1;
+			height: 32px;
+			font-size: 14px;
+			line-height: 30px;
+			border: 1px solid #d9d9d9;
+		}
+
+		.progress {
+			position: relative;
+			width: 320px;
+			height: 20px;
+			border-radius: 10px;
+			border: 1px solid #d9d9d9;
+			overflow: hidden;
+		}
+
+		.progress-bg {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			border-radius: 10px;
+			transform: translate3d(-100%, 0, 0);
+			background: #1890ff;
+		}
+
+		.progress-value {
+			position: absolute;
+			top: 0;
+			right: 15px;
+			font-size: 14px;
+			line-height: 20px;
+			color: #333;
+		}
+
+		.download-btn {
+			display: block;
+			height: 32px;
+			margin-left: auto;
+			padding: 0 15px;
+			font-size: 14px;
+			line-height: 30px;
+			color: #FFF;
+			border: 1px solid transparent;
+			background: #1890ff;
+			border-radius: 2px;
+			cursor: pointer;
+		}
+
+		.download-btn:disabled {
+			color: #999;
+			background: #f5f5f5;
+			border-color: #d9d9d9;
+			cursor: not-allowed;
+		}
+
+		.use-a-download {
+			margin-top: 15px;
+			font-size: 14px;
+			line-height: 20px;
+		}
+
+		.use-a-download a {
+			color: #1890ff;
+			text-decoration: none;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<div class="item">
+			<span>文件链接:</span>
+			<input id="urlInput" type="text" value="http://jsdemo.codeman.top/images/girl.jpg" placeholder="请输入文件链接">
+		</div>
+		<div class="item">
+			<span>文件名:</span>
+			<input id="nameInput" type="text" value="file" placeholder="请输入文件名">
+		</div>
+		<div class="item">
+			<span>下载进度:</span>
+			<div class="progress">
+				<div class="progress-bg"></div>
+				<p class="progress-value">0%</p>
+			</div>
+		</div>
+		<button class="download-btn" type="button" disabled>download</button>
+
+		<div class="use-a-download">使用a标签download属性下载文件并重命名，仅适用于同源URL。
+			<a href="../images/image1.jpg" download="白月魁">download</a>
+		</div>
+	</div>
+
+	<script>
+		// 获取dom
+		const urlInputDom = document.getElementById('urlInput');
+		const nameInputDom = document.getElementById('nameInput');
+		const progressBgDom = document.querySelector('.progress-bg');
+		const progressValueDom = document.querySelector('.progress-value');
+		const downloadBtnDom = document.querySelector('.download-btn');
+
+		// 绑定click事件
+		downloadBtnDom.addEventListener('click', function (e) {
+			if (urlInputDom.value === '') {
+				alert('链接不能为空');
+				return;
+			}
+			this.disabled = true;
+			downloadFile();
+		});
+
+		// 下载文件
+		function downloadFile() {
+			const xhr = new XMLHttpRequest();
+			xhr.open('GET', urlInputDom.value, true);
+			xhr.responseType = 'blob';
+			xhr.addEventListener('load', function () {
+				if (xhr.status === 200) {
+					const a = document.createElement('a');
+					a.href = window.URL.createObjectURL(xhr.response);
+					a.download = nameInputDom.value || 'file';
+					// 将a添加到body中是为了更好的兼容性，谷歌浏览器可以不用添加
+					document.body.appendChild(a);
+					a.click();
+					// 移除
+					a.remove();
+					// 释放url
+					window.URL.revokeObjectURL(a.href);
+					downloadBtnDom.disabled = false;
+				}
+			});
+			xhr.addEventListener('progress', function (e) {
+				let percent = Math.trunc(e.loaded / e.total * 100);
+				progressBgDom.style.transform = 'translate3d(' + (percent - 100) + '%, 0, 0)';
+				progressValueDom.innerHTML = percent + '%';
+			});
+			xhr.addEventListener('error', function (e) {
+				alert('出错了');
+			});
+			xhr.send();
+		}
+	</script>
+</body>
+
+</html>
