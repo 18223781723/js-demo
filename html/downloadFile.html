@@ -16,7 +16,8 @@
 		}
 
 		.container {
-			width: 435px;
+			max-width: 450px;
+			width: 100%;
 			padding: 15px;
 		}
 
@@ -49,7 +50,7 @@
 
 		.progress {
 			position: relative;
-			width: 320px;
+			flex: 1;
 			height: 20px;
 			border-radius: 10px;
 			border: 1px solid #d9d9d9;
@@ -98,7 +99,7 @@
 		}
 
 		.use-a-download {
-			margin-top: 15px;
+			margin-top: 30px;
 			font-size: 14px;
 			line-height: 20px;
 		}
@@ -106,6 +107,25 @@
 		.use-a-download a {
 			color: #1890ff;
 			text-decoration: none;
+		}
+
+		.string-download {
+			margin-top: 30px;
+			font-size: 14px;
+			line-height: 20px;
+		}
+
+		textarea {
+			display: block;
+			width: 100%;
+			height: 120px;
+			padding: 5px;
+			margin: 15px 0;
+			font-size: 14px;
+			line-height: 20px;
+			border: 1px solid #d9d9d9;
+			resize: none;
+			outline: none;
 		}
 	</style>
 </head>
@@ -127,10 +147,16 @@
 				<p class="progress-value">0%</p>
 			</div>
 		</div>
-		<button class="download-btn" type="button" disabled>download</button>
+		<button id="downloadFile" class="download-btn" type="button">download</button>
 
 		<div class="use-a-download">使用a标签download属性下载文件并重命名，仅适用于同源URL。
 			<a href="../images/image1.jpg" download="白月魁">download</a>
+		</div>
+
+		<div class="string-download">
+			<p>将输入框内容保存为file.txt</p>
+			<textarea placeholder="请输入内容">hello world</textarea>
+			<button id="downloadString" class="download-btn" type="button">download</button>
 		</div>
 	</div>
 
@@ -140,10 +166,12 @@
 		const nameInputDom = document.getElementById('nameInput');
 		const progressBgDom = document.querySelector('.progress-bg');
 		const progressValueDom = document.querySelector('.progress-value');
-		const downloadBtnDom = document.querySelector('.download-btn');
+		const downloadFileDom = document.getElementById('downloadFile');
+		const textareaDom = document.querySelector('textarea');
+		const downloadStringDom = document.getElementById('downloadString');
 
 		// 绑定click事件
-		downloadBtnDom.addEventListener('click', function (e) {
+		downloadFileDom.addEventListener('click', function (e) {
 			if (urlInputDom.value === '') {
 				alert('链接不能为空');
 				return;
@@ -169,7 +197,7 @@
 					a.remove();
 					// 释放url
 					window.URL.revokeObjectURL(a.href);
-					downloadBtnDom.disabled = false;
+					downloadFileDom.disabled = false;
 				}
 			});
 			xhr.addEventListener('progress', function (e) {
@@ -182,6 +210,25 @@
 			});
 			xhr.send();
 		}
+
+		downloadStringDom.addEventListener('click', function (e) {
+			if (textareaDom.value === '') {
+				alert('内容不能为空');
+				return;
+			}
+			// type类型https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+			const blob = new Blob([textareaDom.value], { type: 'text/plain' });
+			const a = document.createElement('a');
+			a.href = window.URL.createObjectURL(blob);
+			a.download = 'file';
+			// 将a添加到body中是为了更好的兼容性，谷歌浏览器可以不用添加
+			document.body.appendChild(a);
+			a.click();
+			// 移除
+			a.remove();
+			// 释放url
+			window.URL.revokeObjectURL(a.href);
+		});
 	</script>
 </body>
 

@@ -1,10 +1,11 @@
-html {
-	min-height: 100vh;
+* {
+	margin: 0;
+	padding: 0;
 }
 
 body {
-	margin: 0;
 	font-size: 14px;
+	min-height: 100vh;
 }
 
 .table-box {
@@ -40,24 +41,22 @@ a {
 .pagination {
 	display: flex;
 	justify-content: flex-end;
+	align-items: center;
 	padding: 16px;
+	font-size: 14px;
+	line-height: 20px;
 }
 
 .pagination button {
 	min-width: 32px;
-	height: 32px;
-	padding: 0 5px;
-	border: 1px solid #D9D9D9;
+	height: 24px;
 	font-size: 14px;
-	line-height: 30px;
+	line-height: 22px;
 	border-radius: 2px;
 	background: #FFF;
 	cursor: pointer;
+	border: 1px solid #d9d9d9;
 	transition: .3s;
-}
-
-.pagination button:not(:last-child) {
-	margin-right: 8px;
 }
 
 .pagination button:not(:disabled):hover,
@@ -68,11 +67,31 @@ a {
 
 .pagination button:not(:disabled):active {
 	color: #096DD9;
-	border-color: #096DD9;
 }
 
 .pagination button:disabled {
 	color: #BFBFBF;
-	background: #F5F5F5;
 	cursor: not-allowed;
+}
+
+.pagination-input {
+	width: 52px;
+	height: 22px;
+	padding: 0 5px;
+	margin: 0 10px;
+	font-size: 14px;
+	line-height: 22px;
+	text-align: center;
+	border: 1px solid #d9d9d9;
+	border-radius: 2px;
+	outline: none;
+	transition: .3s;
+}
+
+.pagination-input:hover {
+	border-color: #1890FF;
+}
+
+.pagination-total {
+	margin: 0 10px;
 }

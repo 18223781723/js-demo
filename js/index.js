@@ -2,9 +2,13 @@ Page({
 	data: {
 		pageSize: 20,
 		pageIndex: 1,
-		pageLength: 1,
+		pageTotal: 1,
+		lastPageIndex: 1,
 		content: document.getElementById('content'),
-		pagination: document.querySelector('.pagination')
+		prev: document.querySelector('.pagination-prev'),
+		next: document.querySelector('.pagination-next'),
+		total: document.querySelector('.pagination-total'),
+		input: document.querySelector('.pagination-input')
 	},
 	onLoad: function () {
 		this.renderTable();
@@ -36,63 +40,62 @@ Page({
 	 * 渲染分页
 	 */
 	renderPagination: function () {
-		let html = `<button type="button" data-index="prev" disabled>&lt;</button>`;
 		let length = Math.trunc(tableList.length / this.data.pageSize);
 		if (tableList.length % this.data.pageSize !== 0) {
 			length += 1;
 		}
-		for (let i = 0; i < length; i++) {
-			html += `<button type="button" data-index="${i + 1}"${i === 0 ? ' class="active"' : ''}>${i + 1}</button>`;
+		this.data.pageTotal = length;
+		this.data.total.innerHTML = length;
+		if (length === 1) {
+			this.data.next.disabled = true;
 		}
-		html += `<button type="button" data-index="next"${length === 1 ? ' disabled' : ''}>&gt;</button>`;
-		this.data.pagination.innerHTML = html;
-		this.data.pageLength = length;
 	},
 	/**
 	 * 绑定事件
 	 */
 	bindEvent: function () {
 		const self = this;
-		this.data.pagination.addEventListener('click', function (e) {
-			if (e.target.tagName === 'BUTTON' && e.target.className === '') {
-				const index = e.target.dataset.index;
-				const active = document.querySelector('button.active');
-				const prev = document.querySelector('button[data-index="prev"]');
-				const next = document.querySelector('button[data-index="next"]');
-				active.classList.remove('active');
-				if (index === 'prev') {
-					next.disabled = false;
-					if (self.data.pageIndex > 1) {
-						active.previousElementSibling.classList.add('active');
-						self.data.pageIndex--;
-						if (self.data.pageIndex === 1) {
-							prev.disabled = true;
-						}
-					}
-				} else if (index === 'next') {
-					prev.disabled = false;
-					if (self.data.pageIndex < self.data.pageLength) {
-						active.nextElementSibling.classList.add('active');
-						self.data.pageIndex++;
-						if (self.data.pageIndex === self.data.pageLength) {
-							next.disabled = true;
-						}
-					}
-				} else {
-					e.target.classList.add('active');
-					self.data.pageIndex = Number(e.target.dataset.index);
-					if (self.data.pageIndex === 1) {
-						prev.disabled = true;
-						next.disabled = false;
-					} else if (self.data.pageIndex === self.data.pageLength) {
-						prev.disabled = false;
-						next.disabled = true;
-					} else {
-						prev.disabled = false;
-						next.disabled = false;
-					}
+
+		self.data.prev.addEventListener('click', function (e) {
+			self.data.next.disabled = false;
+			if (self.data.pageIndex > 1) {
+				self.data.pageIndex--;
+				if (self.data.pageIndex === 1) {
+					this.disabled = true;
 				}
-				self.renderTable();
+			}
+			self.data.input.value = self.data.pageIndex;
+			self.renderTable();
+		});
+
+		self.data.next.addEventListener('click', function (e) {
+			self.data.prev.disabled = false;
+			if (self.data.pageIndex < self.data.pageTotal) {
+				self.data.pageIndex++;
+				if (self.data.pageIndex === self.data.pageTotal) {
+					this.disabled = true;
+				}
+			}
+			self.data.input.value = self.data.pageIndex;
+			self.renderTable();
+		});
+
+		self.data.input.addEventListener('keydown', function (e) {
+			if (e.keyCode === 13) {
+				const index = Number(this.value);
+				if (index !== self.data.pageIndex && index >= 1 && index <= self.data.pageTotal) {
+					self.data.prev.disabled = false;
+					self.data.next.disabled = false;
+					if (index === 1) {
+						self.data.prev.disabled = true;
+					} else if (index === self.data.pageTotal) {
+						self.data.next.disabled = true;
+					}
+					self.data.pageIndex = index;
+					self.renderTable();
+				} else {
+					this.value = self.data.pageIndex;
+				}
 			}
 		});
 	}
