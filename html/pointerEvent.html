@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport"
+		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>pointerEvent</title>
+	<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		body {
+			min-height: 100vh;
+			user-select: none;
+		}
+
+		.box {
+			height: 40vh;
+			background: skyblue;
+			touch-action: none;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="box"></div>
+	<div class="console"></div>
+
+	<script>
+		const box = document.querySelector('.box');
+		const log = document.querySelector('.console');
+
+		let isPointerDown = false;
+		let pointers = [];
+		let point = { x: 0, y: 0 };
+		let point2 = { x: 0, y: 0 };
+
+		box.addEventListener('pointerdown', function (e) {
+			console.log(e.type);
+			box.setPointerCapture(e.pointerId);
+			isPointerDown = true;
+			pointers.push(e);
+			point = { x: pointers[0].clientX, y: pointers[0].clientY };
+			log.innerHTML = `
+				第一个点初始位置: x=${Math.trunc(point.x)},y=${Math.trunc(point.y)}<br>
+			`;
+			if (pointers.length > 1) {
+				point2 = { x: pointers[1].clientX, y: pointers[1].clientY };
+				log.innerHTML = `
+					第二个点初始位置: x=${Math.trunc(point2.x)},y=${Math.trunc(point2.y)}
+				`;
+			}
+
+			// 阻止鼠标事件发送
+			e.preventDefault();
+		});
+		box.addEventListener('pointermove', function (e) {
+			if (isPointerDown) {
+				handlePointers(e, 'update');
+				log.innerHTML = `
+					第一个点初始位置: x=${Math.trunc(point.x)},y=${Math.trunc(point.y)}<br>
+					第一个当前始位置: x=${Math.trunc(pointers[0].clientX)},y=${Math.trunc(pointers[0].clientY)}<br>
+				`;
+				if (pointers.length > 1) {
+					log.innerHTML += `
+						第二个点初始位置: x=${Math.trunc(point2.x)},y=${Math.trunc(point2.y)}<br>
+						第二个当前始位置: x=${Math.trunc(pointers[1].clientX)},y=${Math.trunc(pointers[1].clientY)}
+					`;
+				}
+			}
+		});
+		box.addEventListener('pointerup', function (e) {
+			handlePointers(e, 'delete');
+			if (pointers.length === 0) {
+				isPointerDown = false;
+				log.innerHTML = '';
+			}
+		});
+		box.addEventListener('pointercancel', function (e) {
+			isPointerDown = false;
+			pointers = [];
+		});
+
+		/**
+		 * 更新或删除指针
+		 * @param {PointerEvent} e
+		 * @param {string} type
+		 */
+		function handlePointers(e, type) {
+			for (let i = 0; i < pointers.length; i++) {
+				if (pointers[i].pointerId === e.pointerId) {
+					if (type === 'update') {
+						pointers[i] = e;
+					} else if (type === 'delete') {
+						pointers.splice(i, 1);
+					}
+				}
+			}
+		}
+	</script>
+</body>
+
+</html>

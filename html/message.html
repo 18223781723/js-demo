@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport"
+		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>message</title>
+	<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		.overlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			z-index: 1000;
+			pointer-events: none;
+		}
+
+		.message-list {
+			position: fixed;
+			top: 30px;
+			left: 0;
+			right: 0;
+			list-style: none;
+		}
+
+		.message-item {
+			display: flex;
+			justify-content: center;
+			padding: 8px;
+		}
+
+		.message-item div {
+			padding: 10px 16px;
+			background: #FFF;
+			border-radius: 2px;
+			box-shadow: 0 3px 6px -4px rgb(0 0 0 / 12%), 0 6px 16px 0 rgb(0 0 0 / 8%), 0 9px 28px 8px rgb(0 0 0 / 5%);
+		}
+
+		.fade-in {
+			animation: fadeIn .3s ease forwards;
+		}
+
+		@keyframes fadeIn {
+			0% {
+				opacity: 0;
+				transform: translateY(-100%);
+			}
+
+			100% {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		.fade-out {
+			animation: fadeOut .3s ease forwards;
+		}
+
+		@keyframes fadeOut {
+			0% {
+				opacity: 1;
+				transform: translateY(0);
+			}
+
+			100% {
+				opacity: 0;
+				transform: translateY(-100%);
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<button type="button">create message</button>
+	<div class="overlay">
+		<ul class="message-list"></ul>
+	</div>
+
+	<script>
+		const ul = document.querySelector('.message-list');
+		// 点击事件
+		document.querySelector('button').addEventListener('click', function (e) {
+			createMessage('This is a message', 5000);
+		});
+		// 创建message
+		function createMessage(message, duration = 3000) {
+			ul.insertAdjacentHTML('beforeend', '<li class="message-item fade-in"><div>' + message + '</div></li>');
+			const li = document.querySelector('.message-item:last-child');
+			li._timeout = setTimeout(function () {
+				li.classList.remove('fade-in');
+				li.classList.add('fade-out');
+				li.addEventListener('animationend', function () {
+					this.remove();
+				});
+			}, duration);
+			// 最多显示7条
+			const list = document.querySelectorAll('.message-item');
+			if (list.length > 7) {
+				clearTimeout(list[0]._timeout);
+				list[0].remove();
+			}
+		}
+	</script>
+</body>
+
+</html>
