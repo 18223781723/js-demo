@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport"
+		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>js-demo</title>
+	<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		.container {
+			width: 800px;
+			height: 400px;
+			margin: 50px auto;
+			overflow: hidden;
+			user-select: none;
+			outline: 1px solid red;
+			touch-action: none;
+		}
+
+		.banner {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			height: 400px;
+			padding: 0 100px 0 300px;
+		}
+
+		.banner img {
+			width: 200px;
+			height: 200px;
+			object-fit: cover;
+			pointer-events: none;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<div class="banner">
+			<img src="../images/image1.jpg" style="transform: scale(2);">
+			<img src="../images/image2.jpg">
+			<img src="../images/image3.jpg">
+			<img src="../images/image4.jpg">
+			<img src="../images/image5.jpg">
+			<img src="../images/image6.jpg">
+			<!-- <img src="../images/image1.jpg">
+			<img src="../images/image2.jpg">
+			<img src="../images/image3.jpg">
+			<img src="../images/image4.jpg">
+			<img src="../images/image5.jpg">
+			<img src="../images/image6.jpg"> -->
+		</div>
+	</div>
+
+	<script>
+		// 获取dom
+		var container = document.querySelector('.container');
+		var banner = document.querySelector('.banner');
+		var imgList = document.querySelectorAll('img');
+
+		// 声明变量
+		const w = 300;
+		let index = 0;
+		let isPointerDown = false;
+		let point = last = diff = null;
+		let translate = { x: 0, y: 0 };
+		let rafId;
+
+		let bW = imgList.length * w;
+		banner.style.width = bW + 300 + 'px';
+
+		// 监听指针事件
+		container.addEventListener('pointerdown', function (e) {
+			container.setPointerCapture(e.pointerId);
+			isPointerDown = true;
+			point = { x: e.clientX, y: e.clientY };
+			last = { x: e.clientX, y: e.clientY };
+			diff = { x: 0, y: 0 };
+		});
+		container.addEventListener('pointermove', function (e) {
+			if (isPointerDown) {
+				diff = { x: e.clientX - last.x, y: e.clientY - last.y };
+				last = { x: e.clientX, y: e.clientY };
+				translate.x += diff.x;
+				move();
+			}
+		});
+		container.addEventListener('pointerup', function (e) {
+			isPointerDown = false;
+		});
+		container.addEventListener('pointercancel', function (e) {
+			isPointerDown = false;
+		});
+		function move() {
+			if (translate.x > w) translate.x = w;
+			if (translate.x < -bW) translate.x = -bW;
+			index = Math.ceil((Math.abs(translate.x) / w));
+			let scale = Math.abs(translate.x) % w / w;
+			if (scale === 0) scale = 1;
+			if (translate.x >= 0) {
+				imgList[0].style.transform = 'scale(' + (2 - scale) + ')';
+			} else if (translate.x < 300 - bW) {
+				imgList[imgList.length - 1].style.transform = 'scale(' + (2 - scale) + ')';
+			} else {
+				if (index > 0) {
+					imgList[index - 1].style.transform = 'scale(' + (2 - scale) + ')';
+				}
+				imgList[index].style.transform = 'scale(' + (1 + scale) + ')';
+			}
+			banner.style.transform = 'translate3d(' + translate.x + 'px, 0px, 0px)';
+		}
+		function easeOut(from, to, time, duration) {
+			let change = to - from;
+			return -change * (time /= duration) * (time - 2) + from;
+		}
+		function raf(from, to, duration) {
+			let start;
+			let count = 0;
+			function step(timestamp) {
+				if (start === undefined) {
+					start = timestamp;
+				}
+				let time = timestamp - start;
+				if (time > duration) {
+					time = duration;
+					count++;
+				}
+				if (count < 2) {
+					translate.x = easeOut(from, to, time, duration);
+					move();
+					rafId = window.requestAnimationFrame(step);
+				}
+			}
+			rafId = window.requestAnimationFrame(step);
+		}
+
+		function auto() {
+			setInterval(() => {
+				let from = translate.x;
+				let to = translate.x - 300;
+				if (translate.x === 300 - bW) {
+					to = 0;
+					from = -300;
+				}
+				raf(from, to, 300);
+			}, 1300);
+		}
+		auto();
+	</script>
+</body>
+
+</html>
