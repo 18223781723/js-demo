@@ -26,21 +26,7 @@
 			height: 150px;
 			margin: calc(50vh - 75px) auto;
 			transform-style: preserve-3d;
-			animation: rotate 8s linear infinite;
-		}
-
-		@keyframes rotate {
-			0% {
-				transform: rotateX(0) rotateY(0);
-			}
-
-			50% {
-				transform: rotateX(360deg) rotateY(0);
-			}
-
-			100% {
-				transform: rotateX(360deg) rotateY(360deg);
-			}
+			transform: rotateY(-45deg);
 		}
 
 		/* 重叠在一起 */
@@ -50,43 +36,101 @@
 			left: 0;
 			width: 150px;
 			height: 150px;
-			background-size: auto 150px;
+			line-height: 150px;
+			text-align: center;
+			font-size: 30px;
+			color: #FFF;
 		}
 
 		.front {
-			background-image: url(../images/image1.jpg);
-			background-position: 55%;
-			transform: translateZ(75px);
-		}
-
-		.back {
-			background-position: 70%;
-			background-image: url(../images/image2.jpg);
-			transform: translateZ(-75px) rotateY(180deg);
+			background: rgba(255, 0, 0, 0.5);
+			animation: front .5s ease .5s forwards;
 		}
 
 		.left {
-			background-position: 40%;
-			background-image: url(../images/image3.jpg);
-			transform: translateX(-75px) rotateY(-90deg);
+			background: rgba(255, 251, 0, 0.5);
+			animation: left .5s ease 1.5s forwards;
 		}
 
 		.right {
-			background-position: 60%;
-			background-image: url(../images/image4.jpg);
-			transform: translateX(75px) rotateY(90deg);
+			background: rgba(72, 255, 0, 0.5);
+			animation: right .5s ease 2s forwards;
 		}
 
 		.up {
-			background-position: 65%;
-			background-image: url(../images/image5.jpg);
-			transform: translateY(-75px) rotateX(90deg);
+			background: rgba(0, 195, 255, 0.5);
+			animation: up .5s ease 2.5s forwards;
 		}
 
 		.down {
-			background-position: 50%;
-			background-image: url(../images/image6.jpg);
-			transform: translateY(75px) rotateX(-90deg);
+			background: rgba(255, 0, 221, 0.5);
+			animation: down .5s ease 3s forwards;
+		}
+
+		.back {
+			background: rgba(255, 0, 221, 0.5);
+			animation: back .5s ease 1s forwards;
+		}
+
+
+		@keyframes front {
+			0% {
+				transform: translateZ(0);
+			}
+
+			100% {
+				transform: translateZ(75px);
+			}
+		}
+
+		@keyframes left {
+			0% {
+				transform: translateX(0) rotateY(0);
+			}
+
+			100% {
+				transform: translateX(-75px) rotateY(-90deg);
+			}
+		}
+
+		@keyframes right {
+			0% {
+				transform: translateX(0) rotateY(0);
+			}
+
+			100% {
+				transform: translateX(75px) rotateY(90deg);
+			}
+		}
+
+		@keyframes up {
+			0% {
+				transform: translateY(0) rotateX(0);
+			}
+
+			100% {
+				transform: translateY(-75px) rotateX(90deg);
+			}
+		}
+
+		@keyframes down {
+			0% {
+				transform: translateY(0) rotateX(0);
+			}
+
+			100% {
+				transform: translateY(75px) rotateX(-90deg);
+			}
+		}
+
+		@keyframes back {
+			0% {
+				transform: translateZ(0);
+			}
+
+			100% {
+				transform: translateZ(-75px);
+			}
 		}
 	</style>
 </head>
@@ -94,12 +138,12 @@
 <body>
 	<div class="container">
 		<div class="cube">
-			<div class="front"></div>
-			<div class="back"></div>
-			<div class="left"></div>
-			<div class="right"></div>
-			<div class="up"></div>
-			<div class="down"></div>
+			<div class="back">back</div>
+			<div class="down">down</div>
+			<div class="up">up</div>
+			<div class="right">right</div>
+			<div class="left">left</div>
+			<div class="front">front</div>
 		</div>
 	</div>
 

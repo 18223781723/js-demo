@@ -1,5 +1,11 @@
 const tableList = [
 	{
+		title: '3d photo',
+		description: '3d旋转相册',
+		href: 'html/3dPhoto.html',
+		createDate: '2021-07-08'
+	},
+	{
 		title: 'pointerEvent',
 		description: '指针事件多触摸点实现',
 		href: 'html/pointerEvent.html',

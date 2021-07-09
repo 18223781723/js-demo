@@ -53,9 +53,13 @@
 			lastX = curX;
 			lastY = curY;
 			// e.preventDefault();
+			// console.log(e.target);
 		});
 		drag.addEventListener('touchend', function (e) {
-
+			// console.log(e.target);
+		});
+		drag.addEventListener('touchcancel', function (e) {
+			// console.log(e.target);
 		});
 
 	</script>

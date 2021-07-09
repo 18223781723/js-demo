@@ -47,12 +47,12 @@
 			pointers.push(e);
 			point = { x: pointers[0].clientX, y: pointers[0].clientY };
 			log.innerHTML = `
-				第一个点初始位置: x=${Math.trunc(point.x)},y=${Math.trunc(point.y)}<br>
+				第一个点初始位置: x=${Math.trunc(point.x)},y=${Math.trunc(point.y)},isPrimary=${pointers[0].isPrimary}<br>
 			`;
 			if (pointers.length > 1) {
 				point2 = { x: pointers[1].clientX, y: pointers[1].clientY };
 				log.innerHTML = `
-					第二个点初始位置: x=${Math.trunc(point2.x)},y=${Math.trunc(point2.y)}
+					第二个点初始位置: x=${Math.trunc(point2.x)},y=${Math.trunc(point2.y)},isPrimary=${pointers[1].isPrimary}
 				`;
 			}
 
@@ -63,13 +63,13 @@
 			if (isPointerDown) {
 				handlePointers(e, 'update');
 				log.innerHTML = `
-					第一个点初始位置: x=${Math.trunc(point.x)},y=${Math.trunc(point.y)}<br>
-					第一个当前始位置: x=${Math.trunc(pointers[0].clientX)},y=${Math.trunc(pointers[0].clientY)}<br>
+					第一个点初始位置: x=${Math.trunc(point.x)},y=${Math.trunc(point.y)},isPrimary=${pointers[0].isPrimary}<br>
+					第一个点当前位置: x=${Math.trunc(pointers[0].clientX)},y=${Math.trunc(pointers[0].clientY)},isPrimary=${pointers[0].isPrimary}<br>
 				`;
 				if (pointers.length > 1) {
 					log.innerHTML += `
-						第二个点初始位置: x=${Math.trunc(point2.x)},y=${Math.trunc(point2.y)}<br>
-						第二个当前始位置: x=${Math.trunc(pointers[1].clientX)},y=${Math.trunc(pointers[1].clientY)}
+						第二个点初始位置: x=${Math.trunc(point2.x)},y=${Math.trunc(point2.y)},isPrimary=${pointers[1].isPrimary}<br>
+						第二个点当前位置: x=${Math.trunc(pointers[1].clientX)},y=${Math.trunc(pointers[1].clientY)},isPrimary=${pointers[1].isPrimary}
 					`;
 				}
 			}
