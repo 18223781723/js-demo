@@ -12,12 +12,9 @@
 		* {
 			margin: 0;
 			padding: 0;
-			box-sizing: border-box;
 		}
 
 		.container {
-			width: 800px;
-			height: 400px;
 			margin: 50px auto;
 			overflow: hidden;
 			user-select: none;
@@ -26,11 +23,10 @@
 		}
 
 		.banner {
+			box-sizing: border-box;
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			height: 400px;
-			padding: 0 100px 0 300px;
 		}
 
 		.banner img {
@@ -45,69 +41,84 @@
 <body>
 	<div class="container">
 		<div class="banner">
-			<img src="../images/image1.jpg" style="transform: scale(2);">
+			<img src="../images/image1.jpg">
 			<img src="../images/image2.jpg">
 			<img src="../images/image3.jpg">
 			<img src="../images/image4.jpg">
 			<img src="../images/image5.jpg">
 			<img src="../images/image6.jpg">
-			<!-- <img src="../images/image1.jpg">
-			<img src="../images/image2.jpg">
-			<img src="../images/image3.jpg">
-			<img src="../images/image4.jpg">
-			<img src="../images/image5.jpg">
-			<img src="../images/image6.jpg"> -->
 		</div>
 	</div>
-
+	<div class="console"></div>
 	<script>
+
 		// 获取dom
-		var container = document.querySelector('.container');
-		var banner = document.querySelector('.banner');
-		var imgList = document.querySelectorAll('img');
+		const containerDom = document.querySelector('.container');
+		const bannerDom = document.querySelector('.banner');
+		const imgDomList = document.querySelectorAll('img');
+		const length = imgDomList.length;
+		const logDom = document.querySelector('.console');
 
 		// 声明变量
-		const w = 300;
+
+		const img = {
+			width: 200,
+			height: 200,
+			space: 0,
+			scale: 1.5
+		}
+		const containerWidth = img.width * img.scale + 2 * (img.width + img.space) + img.width * (1.5 - 1);
+		const banner = {
+			width: img.width * img.scale * length + img.space * (length - 1) - img.width * (img.scale - 1) * 0.5 * (length - 1),
+			height: img.height * img.scale,
+			x: containerWidth - (img.width * img.scale + img.width + (img.width * (img.scale - 1)) * 0.5),
+		};
 		let index = 0;
 		let isPointerDown = false;
 		let point = last = diff = null;
-		let translate = { x: 0, y: 0 };
 		let rafId;
 
-		let bW = imgList.length * w;
-		banner.style.width = bW + 300 + 'px';
+		containerDom.style.width = containerWidth + 'px';
+		bannerDom.style.width = banner.width + 'px';
+		bannerDom.style.height = banner.height + 'px';
+		bannerDom.style.padding = '0 ' + img.width * (1.5 - 1) * 0.5 + 'px';
+		bannerDom.style.transform = 'translate3d(' + banner.x + 'px , 0px, 0px)';
+		imgDomList[0].style.transform = 'scale(' + img.scale + ')';
 
 		// 监听指针事件
-		container.addEventListener('pointerdown', function (e) {
-			container.setPointerCapture(e.pointerId);
+		containerDom.addEventListener('pointerdown', function (e) {
+			this.setPointerCapture(e.pointerId);
 			isPointerDown = true;
 			point = { x: e.clientX, y: e.clientY };
 			last = { x: e.clientX, y: e.clientY };
 			diff = { x: 0, y: 0 };
 		});
-		container.addEventListener('pointermove', function (e) {
+		containerDom.addEventListener('pointermove', function (e) {
 			if (isPointerDown) {
 				diff = { x: e.clientX - last.x, y: e.clientY - last.y };
 				last = { x: e.clientX, y: e.clientY };
-				translate.x += diff.x;
-				move();
+				banner.x += diff.x;
+				// move();
+				bannerDom.style.transform = 'translate3d(' + banner.x + 'px, 0px, 0px)';
+				logDom.innerHTML = `index:${index}`;
+
 			}
 		});
-		container.addEventListener('pointerup', function (e) {
+		containerDom.addEventListener('pointerup', function (e) {
 			isPointerDown = false;
 		});
-		container.addEventListener('pointercancel', function (e) {
+		containerDom.addEventListener('pointercancel', function (e) {
 			isPointerDown = false;
 		});
 		function move() {
-			if (translate.x > w) translate.x = w;
-			if (translate.x < -bW) translate.x = -bW;
-			index = Math.ceil((Math.abs(translate.x) / w));
-			let scale = Math.abs(translate.x) % w / w;
+			if (banner.x > w) banner.x = w;
+			if (banner.x < -bW) banner.x = -bW;
+			index = Math.ceil((Math.abs(banner.x) / w));
+			let scale = Math.abs(banner.x) % w / w;
 			if (scale === 0) scale = 1;
-			if (translate.x >= 0) {
+			if (banner.x >= 0) {
 				imgList[0].style.transform = 'scale(' + (2 - scale) + ')';
-			} else if (translate.x < 300 - bW) {
+			} else if (banner.x < 300 - bW) {
 				imgList[imgList.length - 1].style.transform = 'scale(' + (2 - scale) + ')';
 			} else {
 				if (index > 0) {
@@ -115,7 +126,7 @@
 				}
 				imgList[index].style.transform = 'scale(' + (1 + scale) + ')';
 			}
-			banner.style.transform = 'translate3d(' + translate.x + 'px, 0px, 0px)';
+			bannerDom.style.transform = 'translate3d(' + banner.x + 'px, 0px, 0px)';
 		}
 		function easeOut(from, to, time, duration) {
 			let change = to - from;
@@ -134,7 +145,7 @@
 					count++;
 				}
 				if (count < 2) {
-					translate.x = easeOut(from, to, time, duration);
+					banner.x = easeOut(from, to, time, duration);
 					move();
 					rafId = window.requestAnimationFrame(step);
 				}
@@ -144,16 +155,16 @@
 
 		function auto() {
 			setInterval(() => {
-				let from = translate.x;
-				let to = translate.x - 300;
-				if (translate.x === 300 - bW) {
+				let from = banner.x;
+				let to = banner.x - 300;
+				if (banner.x === 300 - bW) {
 					to = 0;
 					from = -300;
 				}
 				raf(from, to, 300);
 			}, 1300);
 		}
-		auto();
+		// auto();
 	</script>
 </body>
 
