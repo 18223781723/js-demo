@@ -15,6 +15,7 @@
 		}
 
 		.container {
+			position: relative;
 			margin: 50px auto;
 			overflow: hidden;
 			user-select: none;
@@ -23,6 +24,7 @@
 		}
 
 		.banner {
+			position: relative;
 			box-sizing: border-box;
 			display: flex;
 			justify-content: space-between;
@@ -34,6 +36,45 @@
 			height: 200px;
 			object-fit: cover;
 			pointer-events: none;
+		}
+
+		.ref {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			z-index: -1;
+			display: flex;
+		}
+
+		.a {
+			height: 100%;
+			background: rgb(196, 223, 184);
+		}
+
+		.b {
+			height: 100%;
+			background: rgb(160, 198, 232);
+		}
+
+		.c {
+			height: 100%;
+			background: rgb(249, 204, 157);
+		}
+
+		.d {
+			height: 100%;
+			background: rgb(253, 221, 155);
+		}
+
+		/* 中线 */
+		.mid {
+			position: absolute;
+			left: 50%;
+			top: 0;
+			height: 100%;
+			outline: 1px solid blue;
 		}
 	</style>
 </head>
@@ -47,7 +88,28 @@
 			<img src="../images/image4.jpg">
 			<img src="../images/image5.jpg">
 			<img src="../images/image6.jpg">
+			<div class="ref">
+				<div class="a"></div>
+				<div class="b"></div>
+				<div class="c"></div>
+				<div class="d"></div>
+				<div class="b"></div>
+				<div class="c"></div>
+				<div class="d"></div>
+				<div class="b"></div>
+				<div class="c"></div>
+				<div class="d"></div>
+				<div class="b"></div>
+				<div class="c"></div>
+				<div class="d"></div>
+				<div class="b"></div>
+				<div class="c"></div>
+				<div class="d"></div>
+				<div class="b"></div>
+				<div class="a"></div>
+			</div>
 		</div>
+		<div class="mid"></div>
 	</div>
 	<div class="console"></div>
 	<script>
@@ -60,30 +122,74 @@
 		const logDom = document.querySelector('.console');
 
 		// 声明变量
-
 		const img = {
 			width: 200,
 			height: 200,
-			space: 0,
-			scale: 1.5
+			space: 10,
+			scale: 2
 		}
-		const containerWidth = img.width * img.scale + 2 * (img.width + img.space) + img.width * (1.5 - 1);
+		const padding = img.width * (img.scale - 1) * 0.5;
+		const maxWidth = img.width * img.scale;
+		const containerWidth = maxWidth + 2 * (img.width + img.space + padding);
+
 		const banner = {
-			width: img.width * img.scale * length + img.space * (length - 1) - img.width * (img.scale - 1) * 0.5 * (length - 1),
+			width: maxWidth * length + img.space * (length - 1) - padding * (length - 1),
 			height: img.height * img.scale,
-			x: containerWidth - (img.width * img.scale + img.width + (img.width * (img.scale - 1)) * 0.5),
+			x: containerWidth - maxWidth - img.width - padding - img.space,
 		};
-		let index = 0;
+		const max = containerWidth - img.width - padding;
+		const min = img.width + padding - banner.width;
+		let index = 0, lastIndex;
 		let isPointerDown = false;
 		let point = last = diff = null;
 		let rafId;
+		let interval;
 
 		containerDom.style.width = containerWidth + 'px';
 		bannerDom.style.width = banner.width + 'px';
 		bannerDom.style.height = banner.height + 'px';
-		bannerDom.style.padding = '0 ' + img.width * (1.5 - 1) * 0.5 + 'px';
+		bannerDom.style.padding = '0 ' + img.width * (img.scale - 1) * 0.5 + 'px';
 		bannerDom.style.transform = 'translate3d(' + banner.x + 'px , 0px, 0px)';
 		imgDomList[0].style.transform = 'scale(' + img.scale + ')';
+
+		const aList = document.querySelectorAll('.a');
+		const bList = document.querySelectorAll('.b');
+		const cList = document.querySelectorAll('.c');
+		const dList = document.querySelectorAll('.d');
+		aList.forEach(item => {
+			item.style.width = padding + 'px';
+		});
+		bList.forEach(item => {
+			item.style.width = img.width + 'px';
+		});
+		cList.forEach(item => {
+			item.style.width = padding + 'px';
+		});
+		dList.forEach(item => {
+			item.style.width = img.space + 'px';
+		});
+		const list = [];
+		create();
+		function create() {
+			const half = img.width / 2;
+			let index = 0;
+			for (let i = containerWidth / 2 - padding + img.space; i >= containerWidth / 2 + padding - banner.width; i -= img.width + padding + img.space) {
+				list.push({
+					start: i - img.space,
+					end: i - half - img.space,
+					type: 'big',
+					index: index
+				});
+				list.push({
+					start: i - half - img.space,
+					end: i - img.width - img.space,
+					type: 'small',
+					index: index
+				})
+				index++;
+			}
+			console.log(list);
+		}
 
 		// 监听指针事件
 		containerDom.addEventListener('pointerdown', function (e) {
@@ -92,39 +198,49 @@
 			point = { x: e.clientX, y: e.clientY };
 			last = { x: e.clientX, y: e.clientY };
 			diff = { x: 0, y: 0 };
+			// clearInterval(interval);
 		});
 		containerDom.addEventListener('pointermove', function (e) {
 			if (isPointerDown) {
+				let distance, s, x;
 				diff = { x: e.clientX - last.x, y: e.clientY - last.y };
 				last = { x: e.clientX, y: e.clientY };
 				banner.x += diff.x;
-				// move();
-				bannerDom.style.transform = 'translate3d(' + banner.x + 'px, 0px, 0px)';
-				logDom.innerHTML = `index:${index}`;
-
+				move();
+				logDom.innerHTML = `index:${index}, x=${banner.x}`;
 			}
 		});
 		containerDom.addEventListener('pointerup', function (e) {
 			isPointerDown = false;
+			// auto();
 		});
 		containerDom.addEventListener('pointercancel', function (e) {
 			isPointerDown = false;
+			// auto();
 		});
+
 		function move() {
-			if (banner.x > w) banner.x = w;
-			if (banner.x < -bW) banner.x = -bW;
-			index = Math.ceil((Math.abs(banner.x) / w));
-			let scale = Math.abs(banner.x) % w / w;
-			if (scale === 0) scale = 1;
-			if (banner.x >= 0) {
-				imgList[0].style.transform = 'scale(' + (2 - scale) + ')';
-			} else if (banner.x < 300 - bW) {
-				imgList[imgList.length - 1].style.transform = 'scale(' + (2 - scale) + ')';
-			} else {
-				if (index > 0) {
-					imgList[index - 1].style.transform = 'scale(' + (2 - scale) + ')';
+			if (banner.x < min) {
+				banner.x = min;
+			} else if (banner.x > max) {
+				banner.x = max;
+			}
+			if (lastIndex && index !== lastIndex) {
+				imgDomList[lastIndex].style.transform = 'scale(1)';
+			}
+			for (const item of list) {
+				if (banner.x >= item.end && banner.x <= item.start) {
+					index = item.index;
+					lastIndex = index;
+					distance = item.start - banner.x;
+					s = (img.scale - 1) / (img.width * 0.5) * distance;
+					if (item.type === 'big') {
+						imgDomList[index].style.transform = 'scale(' + (1 + s) + ')';
+					} else {
+						imgDomList[index].style.transform = 'scale(' + (img.scale - s) + ')';
+					}
+					break;
 				}
-				imgList[index].style.transform = 'scale(' + (1 + scale) + ')';
 			}
 			bannerDom.style.transform = 'translate3d(' + banner.x + 'px, 0px, 0px)';
 		}
@@ -132,6 +248,7 @@
 			let change = to - from;
 			return -change * (time /= duration) * (time - 2) + from;
 		}
+
 		function raf(from, to, duration) {
 			let start;
 			let count = 0;
@@ -152,17 +269,19 @@
 			}
 			rafId = window.requestAnimationFrame(step);
 		}
-
 		function auto() {
-			setInterval(() => {
-				let from = banner.x;
-				let to = banner.x - 300;
-				if (banner.x === 300 - bW) {
-					to = 0;
-					from = -300;
+			interval = setInterval(() => {
+				let from, to, x = containerWidth / 2 + img.width * img.scale * 0.5 - banner.width;
+				if (banner.x === x) {
+					banner.x = containerWidth / 2 - img.width * img.scale * 0.5;
+					from = x;
+					to = banner.x;
+				} else {
+					from = banner.x;
+					to = banner.x - img.width - img.space - padding;
 				}
 				raf(from, to, 300);
-			}, 1300);
+			}, 2300);
 		}
 		// auto();
 	</script>
