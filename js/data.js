@@ -1,14 +1,20 @@
 const tableList = [
 	{
+		title: 'asyncAwait',
+		description: 'async await基本用法',
+		href: 'html/asyncAwait.html',
+		createDate: '2021-07-23'
+	},
+	{
 		title: 'carousel',
 		description: '轮播图',
 		href: 'html/carousel.html',
 		createDate: '2021-07-09'
 	},
 	{
-		title: '3d photo',
-		description: '3d旋转相册',
-		href: 'html/3dPhoto.html',
+		title: '3DPhoto',
+		description: '3D旋转相册',
+		href: 'html/3DPhoto.html',
 		createDate: '2021-07-08'
 	},
 	{

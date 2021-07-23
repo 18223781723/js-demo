@@ -176,16 +176,16 @@
 			for (let i = containerWidth / 2 - padding + img.space; i >= containerWidth / 2 + padding - banner.width; i -= img.width + padding + img.space) {
 				list.push({
 					start: i - img.space,
-					end: i - half - img.space,
-					type: 'big',
+					middle: i - img.space - half,
+					end: i - img.space - img.width,
 					index: index
 				});
-				list.push({
-					start: i - half - img.space,
-					end: i - img.width - img.space,
-					type: 'small',
-					index: index
-				})
+				// list.push({
+				// 	start: i - half - img.space,
+				// 	end: i - img.width - img.space,
+				// 	type: 'small',
+				// 	index: index
+				// });
 				index++;
 			}
 			console.log(list);
@@ -207,7 +207,6 @@
 				last = { x: e.clientX, y: e.clientY };
 				banner.x += diff.x;
 				move();
-				logDom.innerHTML = `index:${index}, x=${banner.x}`;
 			}
 		});
 		containerDom.addEventListener('pointerup', function (e) {
@@ -220,29 +219,35 @@
 		});
 
 		function move() {
+			let flag = true;
 			if (banner.x < min) {
 				banner.x = min;
 			} else if (banner.x > max) {
 				banner.x = max;
 			}
-			if (lastIndex && index !== lastIndex) {
-				imgDomList[lastIndex].style.transform = 'scale(1)';
-			}
+
 			for (const item of list) {
 				if (banner.x >= item.end && banner.x <= item.start) {
 					index = item.index;
 					lastIndex = index;
-					distance = item.start - banner.x;
+					distance = item.middle - banner.x;
 					s = (img.scale - 1) / (img.width * 0.5) * distance;
-					if (item.type === 'big') {
-						imgDomList[index].style.transform = 'scale(' + (1 + s) + ')';
+					if (banner.x > item.middle) {
+						imgDomList[index].style.transform = 'scale(' + (img.scale + s) + ')';
 					} else {
 						imgDomList[index].style.transform = 'scale(' + (img.scale - s) + ')';
 					}
 					break;
+				} else {
+					if (flag) {
+						imgDomList[lastIndex].style.transform = 'scale(1)';
+						flag = false;
+						console.log(1);
+					}
 				}
 			}
 			bannerDom.style.transform = 'translate3d(' + banner.x + 'px, 0px, 0px)';
+			logDom.innerHTML = `index:${index}, x=${banner.x},s=${s}`;
 		}
 		function easeOut(from, to, time, duration) {
 			let change = to - from;
