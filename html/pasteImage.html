@@ -10,12 +10,15 @@
     <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
     <style>
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
 
         body {
-            margin: 0;
-            padding: 0;
+            min-height: 100vh;
+            padding: 15px;
+            line-height: 1.5;
         }
 
         kbd {
@@ -24,6 +27,24 @@
             background: #f7fafc;
             border: 1px solid #cbd5e0;
         }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-top: 15px;
+        }
+
+        img {
+            max-width: calc(50% - 20px);
+        }
+
+        textarea {
+            width: 50%;
+            height: calc(100vh - 69px);
+            padding: 5px;
+            resize: none;
+        }
     </style>
 </head>
 
@@ -31,10 +52,15 @@
     <div>
         <kbd>Ctrl</kbd>+<kbd>V</kbd> 粘贴图片
     </div>
-    <img id="preview" src="" alt="">
+    <div class="container">
+        <img id="preview" src="" alt="">
+        <textarea placeholder="图片base64"></textarea>
+    </div>
+
     <script>
         // 获取dom
         const imgDom = document.getElementById('preview');
+        const textareaDom = document.querySelector('textarea');
         // 监听paste事件
         document.addEventListener('paste', function (e) {
             // DataTransferItemList https://developer.mozilla.org/zh-CN/docs/Web/API/DataTransferItemList
@@ -53,7 +79,7 @@
             const fileReader = new FileReader();
             fileReader.addEventListener('load', function (e) {
                 let base64 = e.target.result;
-                imgDom.src = URL.createObjectURL(blob);
+                textareaDom.value = base64;
             });
             fileReader.readAsDataURL(blob);
             // 如果觉得base64太长，也可以生成本地临时链接

@@ -1,5 +1,11 @@
 const tableList = [
 	{
+		title: 'pinch',
+		description: '双指缩放图片',
+		href: 'html/pinch.html',
+		createDate: '2021-08-02'
+	},
+	{
 		title: 'asyncAwait',
 		description: 'async await基本用法',
 		href: 'html/asyncAwait.html',
@@ -37,7 +43,7 @@ const tableList = [
 	},
 	{
 		title: 'cube',
-		description: 'CSS3实现立方体',
+		description: 'CSS3实现正方体',
 		href: 'html/cube.html',
 		createDate: '2021-06-18'
 	},
@@ -70,6 +76,12 @@ const tableList = [
 		description: '格式化输入内容',
 		href: 'html/inputFormat.html',
 		createDate: '2021-06-01'
+	},
+	{
+		title: 'paste image',
+		description: 'Ctrl+V粘贴图片或者截图',
+		href: 'html/pasteImage.html',
+		createDate: '2021-05-24'
 	},
 	{
 		title: 'onion model',

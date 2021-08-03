@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport"
+		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>requestAnimationFrame</title>
+	<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		.box {
+			width: 100px;
+			height: 100px;
+			margin-bottom: 20px;
+			background: red;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="box"></div>
+	<div class="box"></div>
+	<script>
+		const boxes = document.querySelectorAll('.box');
+		let rafId = null;
+		function raf(func, duration) {
+			let start;
+			let count = 0;
+			function step(timestamp) {
+				if (start === undefined) start = timestamp;
+				let time = timestamp - start;
+				if (time > duration) {
+					time = duration;
+					count++;
+				}
+				if (count <= 1) {
+					func(time);
+					rafId = window.requestAnimationFrame(step);
+				}
+			}
+			rafId = window.requestAnimationFrame(step);
+		}
+		function easeOut(from, to, time, duration) {
+			const change = to - from;
+			return -change * (time /= duration) * (time - 2) + from;
+		}
+		raf((time, duration) => {
+			boxes[0].style.transform = 'translateX(' + easeOut(0, 1000, time, 3000) + 'px)';
+			// console.log(rafId);
+		}, 3000);
+		raf((time, duration) => {
+			boxes[1].style.transform = 'translateX(' + easeOut(0, 800, time, 3000) + 'px)';
+			// console.log(rafId);
+		}, 3000);
+		document.addEventListener('click', function () {
+			cancelAnimationFrame(rafId);
+		})
+	</script>
+</body>
+
+</html>
