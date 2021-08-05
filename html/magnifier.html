@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport"
+		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>magnifier</title>
+	<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		.container {
+			display: flex;
+			align-items: flex-start;
+			padding: 15px;
+		}
+
+		.small {
+			position: relative;
+			margin-right: 15px;
+			cursor: move;
+		}
+
+		.small img {
+			display: block;
+			width: 400px;
+		}
+
+		.big {
+			visibility: hidden;
+			width: 400px;
+			height: 400px;
+			overflow: hidden;
+		}
+
+		.big img {
+			display: block;
+			width: 800px;
+		}
+
+		.mask {
+			visibility: hidden;
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 200px;
+			height: 200px;
+			background-image: url('../images/point.png');
+			pointer-events: none;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<div class="small">
+			<img src="../images/liya.jpg" alt="">
+			<div class="mask"></div>
+		</div>
+		<div class="big">
+			<img src="../images/liya.jpg" alt="">
+		</div>
+	</div>
+
+	<script>
+		// 小图容器
+		const small = {
+			element: document.querySelector('.small'),
+			width: 400,
+			height: 300
+		};
+		const smallRect = small.element.getBoundingClientRect();
+		// 放大镜遮罩
+		const mask = {
+			element: document.querySelector('.mask'),
+			width: 200,
+			height: 200,
+			halfWidth: 100,
+			halfHeight: 100
+		};
+		// 大图容器
+		const big = document.querySelector('.big');
+		// 大图
+		const bigImg = document.querySelector('.big img');
+		// 全局变量
+		let isMouseover = false,
+			x,
+			y;
+		// 绑定mouseover
+		small.element.addEventListener('mouseover', function (e) {
+			// 也可以使用css实现 .small:hover .mask{ visibility: visible; }
+			// visibility: visible可以使用display: block代替，根据实际情况选择
+			mask.element.style.visibility = 'visible';
+			big.style.visibility = 'visible';
+			isMouseover = true;
+		});
+		// 绑定mouseout
+		small.element.addEventListener('mouseout', function (e) {
+			// visibility: hidden可以使用display: none代替，根据实际情况选择
+			mask.element.style.visibility = 'hidden';
+			big.style.visibility = 'hidden';
+			isMouseover = false;
+		});
+		// 绑定mousemove
+		small.element.addEventListener('mousemove', function (e) {
+			if (isMouseover) {
+				x = e.clientX - smallRect.left - mask.halfWidth;
+				y = e.clientY - smallRect.top - mask.halfHeight;
+				// 边界判断
+				if (x < 0) {
+					x = 0;
+				} else if (x > small.width - mask.width) {
+					x = small.width - mask.width
+				}
+				if (y < 0) {
+					y = 0;
+				} else if (y > small.height - mask.height) {
+					y = small.height - mask.height;
+				}
+				mask.element.style.transform = 'translate3d(' + x + 'px ,' + y + 'px, 0)';
+				bigImg.style.transform = 'translate3d(' + (x * -2) + 'px ,' + (y * -2) + 'px, 0)';
+			}
+		});
+	</script>
+</body>
+
+</html>
