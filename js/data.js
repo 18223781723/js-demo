@@ -1,5 +1,11 @@
 const tableList = [
 	{
+		title: 'wheel',
+		description: '鼠标滚轮缩放图片',
+		href: 'html/wheel.html',
+		createDate: '2021-08-08'
+	},
+	{
 		title: 'magnifier',
 		description: '图片放大镜',
 		href: 'html/magnifier.html',

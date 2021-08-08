@@ -53,6 +53,14 @@
 			background-image: url('../images/point.png');
 			pointer-events: none;
 		}
+
+		.small:hover .mask {
+			visibility: visible;
+		}
+
+		.small:hover~.big {
+			visibility: visible;
+		}
 	</style>
 </head>
 
@@ -72,7 +80,7 @@
 		const small = {
 			element: document.querySelector('.small'),
 			width: 400,
-			height: 300
+			height: 320
 		};
 		const smallRect = small.element.getBoundingClientRect();
 		// 放大镜遮罩
@@ -88,43 +96,31 @@
 		// 大图
 		const bigImg = document.querySelector('.big img');
 		// 全局变量
-		let isMouseover = false,
-			x,
-			y;
-		// 绑定mouseover
-		small.element.addEventListener('mouseover', function (e) {
-			// 也可以使用css实现 .small:hover .mask{ visibility: visible; }
-			// visibility: visible可以使用display: block代替，根据实际情况选择
-			mask.element.style.visibility = 'visible';
-			big.style.visibility = 'visible';
-			isMouseover = true;
-		});
-		// 绑定mouseout
-		small.element.addEventListener('mouseout', function (e) {
-			// visibility: hidden可以使用display: none代替，根据实际情况选择
-			mask.element.style.visibility = 'hidden';
-			big.style.visibility = 'hidden';
-			isMouseover = false;
-		});
+		let x, y;
+		const bounding = {
+			left: 0,
+			right: small.width - mask.width,
+			top: 0,
+			bottom: small.height - mask.height
+		}
 		// 绑定mousemove
 		small.element.addEventListener('mousemove', function (e) {
-			if (isMouseover) {
-				x = e.clientX - smallRect.left - mask.halfWidth;
-				y = e.clientY - smallRect.top - mask.halfHeight;
-				// 边界判断
-				if (x < 0) {
-					x = 0;
-				} else if (x > small.width - mask.width) {
-					x = small.width - mask.width
-				}
-				if (y < 0) {
-					y = 0;
-				} else if (y > small.height - mask.height) {
-					y = small.height - mask.height;
-				}
-				mask.element.style.transform = 'translate3d(' + x + 'px ,' + y + 'px, 0)';
-				bigImg.style.transform = 'translate3d(' + (x * -2) + 'px ,' + (y * -2) + 'px, 0)';
+			x = e.clientX - smallRect.left - mask.halfWidth;
+			y = e.clientY - smallRect.top - mask.halfHeight;
+			// 边界判断
+			if (x < bounding.left) {
+				x = bounding.left;
+			} else if (x > bounding.right) {
+				x = bounding.right;
 			}
+			if (y < bounding.top) {
+				y = bounding.top;
+			} else if (y > bounding.bottom) {
+				y = bounding.bottom;
+			}
+			mask.element.style.transform = 'translate3d(' + x + 'px ,' + y + 'px, 0)';
+			bigImg.style.transform = 'translate3d(' + (x * -2) + 'px ,' + (y * -2) + 'px, 0)';
+			e.preventDefault();
 		});
 	</script>
 </body>

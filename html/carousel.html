@@ -82,14 +82,26 @@
 <body>
 	<div class="container">
 		<div class="banner">
-			<img src="../images/image1.jpg">
-			<img src="../images/image2.jpg">
-			<img src="../images/image3.jpg">
-			<img src="../images/image4.jpg">
-			<img src="../images/image5.jpg">
-			<img src="../images/image6.jpg">
+			<img src="../images/dragon/aerjieta.jpg">
+			<img src="../images/dragon/baerna.jpg">
+			<img src="../images/dragon/beisikede.jpg">
+			<img src="../images/dragon/jielante.jpg">
+			<img src="../images/dragon/kalqiu.jpg">
+			<img src="../images/dragon/lanbote.jpg">
+			<img src="../images/dragon/liya.jpg">
+			<img src="../images/dragon/naierwen.jpg">
+			<img src="../images/dragon/telamayi.jpg">
 			<div class="ref">
 				<div class="a"></div>
+				<div class="b"></div>
+				<div class="c"></div>
+				<div class="d"></div>
+				<div class="b"></div>
+				<div class="c"></div>
+				<div class="d"></div>
+				<div class="b"></div>
+				<div class="c"></div>
+				<div class="d"></div>
 				<div class="b"></div>
 				<div class="c"></div>
 				<div class="d"></div>
@@ -242,7 +254,6 @@
 					if (flag) {
 						imgDomList[lastIndex].style.transform = 'scale(1)';
 						flag = false;
-						console.log(1);
 					}
 				}
 			}
@@ -285,7 +296,7 @@
 					from = banner.x;
 					to = banner.x - img.width - img.space - padding;
 				}
-				raf(from, to, 300);
+				raf(from, to, 500);
 			}, 2300);
 		}
 		// auto();
