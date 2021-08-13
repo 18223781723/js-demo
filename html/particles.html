@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport"
+		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>particles</title>
+	<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		canvas {
+			display: block;
+			background: #000;
+		}
+
+		.log {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			color: #fff;
+		}
+	</style>
+</head>
+
+<body>
+	<canvas id="canvas"></canvas>
+	<div class="log"></div>
+	<script>
+		const log = document.querySelector('.log');
+		// 获取dom
+		const canvas = document.getElementById('canvas');
+		const ctx = canvas.getContext('2d');
+		const colors = ['#ed1941', '#f05b72', '#ef4136', '#f15a22', '#8e3e1f', '#fcaf17', '#b76f40', '#00ae9d', '#009ad6', '#1d953f', '#426ab3', '#6950a1', '#74787c', '#2a5caa'];
+		let w, h;
+		// 设置canvas宽高
+		setCanvasSize();
+		function setCanvasSize() {
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+			w = window.innerWidth;
+			h = window.innerHeight;
+		}
+		window.addEventListener('resize', setCanvasSize);
+		/**
+		 * 获取min（包含） - max（不包含）之间的随机数
+		 * @param {number} min 最小值
+		 * @param {number} max 最大值
+		 * @returns 
+		 */
+		function getRandom(min, max) {
+			return Math.random() * (max - min) + min;
+		}
+		// 构造函数
+		function Particle() { }
+		// 创建粒子函数
+		Particle.prototype.create = function () {
+			// 粒子半径
+			this.radius = getRandom(2.2, 5);
+			// 粒子位置
+			this.x = getRandom(0 + this.radius, w - this.radius);
+			this.y = getRandom(0 + this.radius, h - this.radius);
+			// 粒子运动速度
+			this.speedX = getRandom(-1.5, 1.5);
+			this.speedY = getRandom(-1.5, 1.5);
+			// 粒子颜色
+			this.color = colors[Math.floor(getRandom(0, colors.length))];
+		}
+
+		// 绘制粒子函数
+		Particle.prototype.draw = function () {
+			ctx.beginPath();
+			ctx.fillStyle = this.color;
+			ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+			ctx.fill();
+		}
+		// 移动粒子函数
+		Particle.prototype.move = function () {
+			// 碰撞边界后反弹
+			if (this.x <= this.radius || this.x + this.radius >= w) {
+				this.speedX *= -1;
+			}
+			if (this.y <= this.radius || this.y + this.radius >= h) {
+				this.speedY *= -1;
+			}
+			this.x += this.speedX;
+			this.y += this.speedY;
+			this.draw();
+		}
+		// 粒子数组
+		const particles = [];
+		for (let i = 0; i < 300; i++) {
+			const particle = new Particle();
+			particle.create();
+			particles.push(particle);
+		}
+		// 动画
+		function raf() {
+			let start;
+			function step(timestamp) {
+				if (start === undefined) {
+					start = timestamp;
+				}
+				const fps = Math.trunc(1000 / (timestamp - start));
+				start = timestamp;
+				log.innerHTML = `${fps}FPS`;
+				// 清空画布
+				ctx.clearRect(0, 0, w, h);
+				// 移动粒子
+				for (const particle of particles) {
+					particle.move();
+				}
+				window.requestAnimationFrame(step);
+			}
+			window.requestAnimationFrame(step);
+		}
+		raf();
+	</script>
+</body>
+
+</html>
