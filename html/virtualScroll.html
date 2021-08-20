@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport"
+		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>virtualScroll</title>
+	<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		.virtual-scroll-box {
+			width: 240px;
+			height: 300px;
+			overflow: auto;
+			will-change: scroll-position;
+			transform: translateZ(0);
+		}
+
+		.virtual-list {
+			height: 50000px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="virtual-scroll-box">
+		<div class="virtual-list"></div>
+	</div>
+</body>
+
+</html>

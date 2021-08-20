@@ -1,5 +1,23 @@
 const tableList = [
 	{
+		title: 'transition',
+		description: '使用transition过渡translate，width，height。在微信浏览器中，动画存在抖动以及轨迹偏移的问题',
+		href: 'html/transition.html',
+		createDate: '2021-08-20'
+	},
+	{
+		title: 'rotate',
+		description: '双指旋转',
+		href: 'html/rotate.html',
+		createDate: '2021-08-20'
+	},
+	{
+		title: 'virtual scroll',
+		description: '虚拟滚动列表，承载大量数据',
+		href: 'html/virtualScroll.html',
+		createDate: '2021-08-13'
+	},
+	{
 		title: 'particles',
 		description: 'canvas 粒子特效',
 		href: 'html/particles.html',

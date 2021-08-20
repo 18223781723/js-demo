@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport"
+		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>rotate</title>
+	<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		.rotate {
+			position: relative;
+			width: 400px;
+			transform: translate3d(0, 0, 0) rotate(0deg);
+		}
+
+		.rotate::after {
+			content: '';
+			position: absolute;
+			left: calc(50% - 2px);
+			top: calc(50% - 2px);
+			width: 4px;
+			height: 4px;
+			background: red;
+			border-radius: 50%;
+		}
+
+		img {
+			display: block;
+			width: 100%;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="rotate">
+		<img src="../images/liya.jpg" alt="">
+	</div>
+
+	<script>
+		const rotateBox = document.querySelector('.rotate');
+		let x = 0, y = 0, rotate = 0;
+
+		rotateBox.addEventListener('wheel', function (e) {
+			if (e.deltaY < 0) {
+				rotate += 5;
+			} else {
+				rotate -= 5;
+			}
+
+			// 圆上一点
+			const a = { x: e.clientX, y: e.clientY };
+			// 圆心坐标
+			const o = { x: 200 + x, y: 160 + y };
+			// 半径
+			const r = getDistance(o, a);
+			// this.style.transformOrigin = a.x + 'px ' + a.y + 'px';
+			const x1 = o.x + r * Math.cos(5 * Math.PI / 180);
+			const y1 = o.y + r * Math.sin(5 * Math.PI / 180);
+			const x2 = o.x + r - x1;
+			const y2 = o.y + r - y1;
+			x += 2;
+			console.log(r, x1, y1, x1 - a.x, y1 - a.y);
+			this.style.transform = 'translate3d(' + x + 'px, ' + y + 'px, 0) rotate(' + rotate + 'deg)';
+		});
+		function getDistance(a, b) {
+			const x = a.x - b.x;
+			const y = a.y - b.y;
+			return Math.hypot(x, y); // Math.sqrt(x * x + y * y);
+		}
+	</script>
+</body>
+
+</html>

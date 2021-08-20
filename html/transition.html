@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport"
+		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>transition</title>
+	<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		.container {
+			position: relative;
+			height: 100vh;
+			background: #000;
+			overflow: hidden;
+			touch-action: none;
+		}
+
+		img {
+			position: absolute;
+			transform-origin: left top;
+		}
+
+		label,
+		p {
+			font-size: 12px;
+			color: #FFF;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<img alt="">
+		<label><input type="checkbox" checked>useTransform</label>
+		<p>勾选表示使用transition过渡translate，width，height。在微信浏览器中，动画存在抖动以及轨迹偏移的问题。不勾选则表示使用transition过渡left，top，width，height。则不存在该问题。
+		</p>
+	</div>
+
+	<script src="http://nonamegesture.codeman.top/src/js/noname-gesture.js"></script>
+	<script>
+		// 使用transition过渡translate，with，height，动画会抖动，且运动轨迹会便宜。微信浏览器比较严重。解决办法：使用requestAnimationFrame实现动画
+		// 使用transition过渡left，top，with，height，则不会有问题。
+		let x, y, scale = 1;
+		let useTransform = true;
+		document.querySelector('input').addEventListener('change', function (e) {
+			useTransform = this.checked;
+			image.style.transition = 'none';
+			if (this.checked) {
+				image.style.left = 0;
+				image.style.top = 0;
+				image.style.transform = 'translate3d(' + x + 'px, ' + y + 'px, 0px)';
+			} else {
+				image.style.left = x + 'px';
+				image.style.top = y + 'px';
+				image.style.transform = 'none';
+			}
+		});
+		const image = document.querySelector('img');
+
+		// 由于图片是异步加载，需要在load方法里获取naturalWidth，naturalHeight
+		image.addEventListener('load', function () {
+			const gesture = new NonameGesture(image, {
+				doubleTap: function (e) {
+					let ratio = 1 / scale;
+					if (scale <= 1) {
+						ratio = 4;
+					}
+					x -= (ratio - 1) * (e.clientX - x);
+					y -= (ratio - 1) * (e.clientY - y);
+					scale *= ratio;
+					image.style.transition = '300ms';
+					if (useTransform) {
+						image.style.transform = 'translate3d(' + x + 'px, ' + y + 'px, 0px)';
+					} else {
+						image.style.left = x + 'px';
+						image.style.top = y + 'px';
+					}
+					image.style.width = result.width * scale + 'px';
+					image.style.height = result.height * scale + 'px';
+				},
+				drag: function (e) {
+					x += e._diffX;
+					y += e._diffY;
+					image.style.transition = 'none';
+					if (useTransform) {
+						image.style.transform = 'translate3d(' + x + 'px, ' + y + 'px, 0px)';
+					} else {
+						image.style.left = x + 'px';
+						image.style.top = y + 'px';
+					}
+					image.style.width = result.width * scale + 'px';
+					image.style.height = result.height * scale + 'px';
+				}
+			});
+
+			const result = gesture.getImgSize(image.naturalWidth, image.naturalHeight, window.innerWidth, window.innerHeight);
+			image.style.width = result.width + 'px';
+			image.style.height = result.height + 'px';
+			x = (window.innerWidth - result.width) * 0.5;
+			y = (window.innerHeight - result.height) * 0.5;
+			if (useTransform) {
+				image.style.transform = 'translate3d(' + x + 'px, ' + y + 'px, 0px)';
+			} else {
+				image.style.left = x + 'px';
+				image.style.top = y + 'px';
+			}
+		});
+		// 图片赋值需放在load回调之后，因为图片缓存后读取很快，有可能不执行load回调
+		image.src = '../images/liya.jpg';
+	</script>
+</body>
+
+</html>

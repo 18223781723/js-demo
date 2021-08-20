@@ -50,13 +50,28 @@
 			const change = to - from;
 			return -change * (time /= duration) * (time - 2) + from;
 		}
+		function bounceEaseOut(from, to, time, duration) {
+			const change = to - from;
+			let t = time / duration;
+			if (t < (1 / 2.75)) {
+				return change * (7.5625 * t * t) + from;
+			} else if (t < (2 / 2.75)) {
+				return change * (7.5625 * (t -= (1.5 / 2.75)) * t + .75) + from;
+			}/*  else if (t < (2.5 / 2.75)) {
+				return change * (7.5625 * (t -= (2.25 / 2.75)) * t + .9375) + from
+			} *//*  else {
+				return change * (7.5625 * (t -= (2.625 / 2.75)) * t + .984375) + from;
+			} */
+		}
+		/* raf((time, duration) => {
+			const x = easeOut(0, 500, time, 3000)
+			boxes[0].style.transform = 'translateX(' + x + 'px)';
+			console.log(rafId, x);
+		}, 3000); */
 		raf((time, duration) => {
-			boxes[0].style.transform = 'translateX(' + easeOut(0, 1000, time, 3000) + 'px)';
-			// console.log(rafId);
-		}, 3000);
-		raf((time, duration) => {
-			boxes[1].style.transform = 'translateX(' + easeOut(0, 800, time, 3000) + 'px)';
-			// console.log(rafId);
+			const x = bounceEaseOut(0, 500, time, 300)
+			boxes[1].style.transform = 'translateX(' + x + 'px)';
+			console.log(rafId, x);
 		}, 3000);
 		document.addEventListener('click', function () {
 			cancelAnimationFrame(rafId);
