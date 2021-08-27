@@ -14,66 +14,45 @@
 			padding: 0;
 		}
 
-		.rotate {
-			position: relative;
-			width: 400px;
-			transform: translate3d(0, 0, 0) rotate(0deg);
-		}
-
-		.rotate::after {
-			content: '';
-			position: absolute;
-			left: calc(50% - 2px);
-			top: calc(50% - 2px);
-			width: 4px;
-			height: 4px;
-			background: red;
-			border-radius: 50%;
-		}
-
 		img {
 			display: block;
-			width: 100%;
+			width: 400px;
+			transform: translate3d(0, 0, 0) rotate(0deg);
 		}
 	</style>
 </head>
 
 <body>
-	<div class="rotate">
-		<img src="../images/liya.jpg" alt="">
-	</div>
+	<img id="image" src="../images/liya.jpg" alt="">
 
 	<script>
-		const rotateBox = document.querySelector('.rotate');
+		const image = document.getElementById('image');
 		let x = 0, y = 0, rotate = 0;
-
-		rotateBox.addEventListener('wheel', function (e) {
-			if (e.deltaY < 0) {
-				rotate += 5;
-			} else {
-				rotate -= 5;
+		image.addEventListener('wheel', function (e) {
+			let angle = 10;
+			// transform-origin相对于视口左上角的坐标
+			const origin = {
+				x: 200 + x,
+				y: 160 + y
+			};
+			// 以鼠标位置为原点(0, 0)，计算transform-origin的相对坐标
+			const a = {
+				x: origin.x - e.clientX,
+				y: e.clientY - origin.y
+			};
+			if (e.deltaY > 0) { // 逆时针旋转
+				angle = -10;
 			}
-
-			// 圆上一点
-			const a = { x: e.clientX, y: e.clientY };
-			// 圆心坐标
-			const o = { x: 200 + x, y: 160 + y };
-			// 半径
-			const r = getDistance(o, a);
-			// this.style.transformOrigin = a.x + 'px ' + a.y + 'px';
-			const x1 = o.x + r * Math.cos(5 * Math.PI / 180);
-			const y1 = o.y + r * Math.sin(5 * Math.PI / 180);
-			const x2 = o.x + r - x1;
-			const y2 = o.y + r - y1;
-			x += 2;
-			console.log(r, x1, y1, x1 - a.x, y1 - a.y);
+			// 计算点a绕鼠标原点(0, 0)旋转angle度后点b的坐标
+			const b = {
+				x: (a.x - 0) * Math.cos(angle * Math.PI / 180) + (a.y - 0) * Math.sin(angle * Math.PI / 180) + 0,
+				y: (a.x - 0) * Math.sin(angle * Math.PI / 180) - (a.y - 0) * Math.cos(angle * Math.PI / 180) + 0
+			}
+			rotate = (rotate + angle) % 360;
+			x -= a.x - b.x;
+			y += a.y + b.y;
 			this.style.transform = 'translate3d(' + x + 'px, ' + y + 'px, 0) rotate(' + rotate + 'deg)';
 		});
-		function getDistance(a, b) {
-			const x = a.x - b.x;
-			const y = a.y - b.y;
-			return Math.hypot(x, y); // Math.sqrt(x * x + y * y);
-		}
 	</script>
 </body>
 
