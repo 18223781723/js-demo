@@ -12,136 +12,346 @@
         * {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
-        .box {
+        .btn {
+            height: 32px;
+            padding: 0 15px;
+            text-align: center;
+            font-size: 14px;
+            line-height: 32px;
+            color: #FFF;
+            border: none;
+            background: #1890ff;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        .mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 999;
+            background: rgba(0, 0, 0, .6);
+            animation: fadeIn .3s forwards;
+        }
+
+        .slide-box {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 15px;
+            border-radius: 10px 10px 0 0;
+            background: #FFF;
+            user-select: none;
+        }
+
+        .fade-in {
+            animation: fadeIn .3s forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .fade-out {
+            animation: fadeOut .3s forwards;
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 10;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+
+        .slide-up {
+            animation: slideUp .3s forwards;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translate3d(0, 100%, 0);
+            }
+
+            to {
+                transform: translate3d(0, 0, 0);
+            }
+        }
+
+        .slide-down {
+            animation: slideDown .3s forwards;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translate3d(0, 0, 0);
+            }
+
+            to {
+                transform: translate3d(0, 100%, 0);
+            }
+        }
+
+        h4 {
+            height: 24px;
+            margin-bottom: 16px;
+            font-size: 16px;
+            line-height: 24px;
+            text-align: center;
+        }
+
+        .picker-group {
+            display: flex;
+        }
+
+        .picker-column {
             position: relative;
-            width: 160px;
+            flex: 1;
             height: 200px;
-            margin: 300px auto 0;
-            outline: 1px solid red;
+            margin: 0 auto;
             overflow: hidden;
+            touch-action: none;
         }
 
-        .box::before {
+        .picker-column::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            z-index: 99;
-            height: 80px;
-            border-bottom: 1px solid #CCC;
+            z-index: 1;
+            height: 79px;
+            border-bottom: 1px solid #ebebeb;
             background: linear-gradient(to bottom, rgba(255, 255, 255, .9), rgba(255, 255, 255, .6));
         }
 
-        .box::after {
+        .picker-column::after {
             content: '';
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
-            z-index: 99;
-            height: 80px;
-            border-top: 1px solid #CCC;
+            z-index: 1;
+            height: 79px;
+            border-top: 1px solid #ebebeb;
             background: linear-gradient(to bottom, rgba(255, 255, 255, .6), rgba(255, 255, 255, .9));
         }
 
-        p {
+        li {
+            list-style: none;
             font-size: 14px;
             line-height: 40px;
             text-align: center;
-            user-select: none;
+        }
+
+        .btn-sure {
+            display: block;
+            margin: 15px auto 0;
         }
     </style>
 </head>
 
 <body>
-    <div class="box" id="box">
-        <div id="content"></div>
+    <button class="btn btn-open" type="button">时间选择器</button>
+    <div hidden class="mask">
+        <div class="slide-box">
+            <h4>时间选择器</h4>
+            <div class="picker-group">
+                <div class="picker-column">
+                    <ul class="picker-content"></ul>
+                </div>
+                <div class="picker-column">
+                    <ul class="picker-content"></ul>
+                </div>
+            </div>
+            <button class="btn btn-sure" type="button">确定</button>
+        </div>
     </div>
-
     <script>
+        const btnOpen = document.querySelector('.btn-open');
+        const btnSure = document.querySelector('.btn-sure');
+        const mask = document.querySelector('.mask');
+        const slide = document.querySelector('.slide-box');
+        btnOpen.addEventListener('click', function () {
+            mask.hidden = false;
+            mask.classList.add('fade-in');
+            slide.classList.add('slide-up');
+        });
+        mask.addEventListener('click', function (e) {
+            if (e.target.className.includes('mask')) {
+                mask.classList.remove('fade-in');
+                mask.classList.add('fade-out');
+                slide.classList.remove('slide-up');
+                slide.classList.add('slide-down');
+            }
+        });
+        mask.addEventListener('animationend', function (e) {
+            if (e.target.className.includes('fade-out')) {
+                mask.hidden = true;
+                mask.classList.remove('fade-out');
+                slide.classList.remove('slide-down');
+            }
+        });
+        btnSure.addEventListener('click', function (e) {
+            alert(hourPicker.result + ' : ' + minutePicker.result);
+            e.preventDefault();
+        });
         /**
          * 原生javascript实现picker
          */
-        // 获取元素
-        let box = document.querySelector('#box');
-        let content = document.querySelector('#content');
-        // 模拟数据
-        let list = ['飞机', '高铁', '动车', '火车', '客车', '汽车', '其他'];
-        let html = '';
-        for (let i = 0; i < list.length; i++) {
-            html += '<p>' + list[i] + '</p>';
+        function Picker(options) {
+            this.options = Object.assign({}, options);
+            this.isPointerdown = false;
+            this.itemHeight = 40;
+            this.maxY = this.itemHeight * 2;
+            this.minY = this.itemHeight * (3 - this.options.list.length);
+            this.lastY = 0;
+            this.diffY = 0;
+            this.translateY = 0; // 当前位置
+            this.friction = 0.95; // 摩擦系数
+            this.positionY = 0; // 目标位置
+            this.rafId = null;
+            this.result = this.options.list[0];
+            this.render();
+            this.bindEventListener();
         }
-        content.innerHTML = html;
-        // 初始位置偏移
-        content.style.transform = 'translateY(80px)';
-        // 变量
-        let startY = 0, nowY = 0, moveY = 0, offsetY = 0, moveTime = 0, rowH = 40;
-        let offsetTop = 2 * rowH, offsetBottom = list.length * rowH - 3 * rowH;
-        let isBounce = false; // 是否需要回弹
-
-        box.onmousedown = function (e) { // 鼠标按下时
-
-            startY = e.clientY;
-            offsetY = parseInt(getComputedStyle(content).transform.split(',')[5]);
-            content.style.transition = 'none';
-
-            document.onmousemove = function (ev) { // 鼠标移动时
-
-                nowY = ev.clientY;
-                moveY = nowY - startY;
-                offsetY = offsetY + moveY;
-                content.style.transform = 'translateY(' + offsetY + 'px)';
-                startY = nowY;
-
-                moveTime = new Date().getTime();
-            };
-
-            document.onmouseup = function () { // 鼠标松开时
-
-                document.onmousemove = null;
-                isBounce = false;
-                let time = new Date().getTime() - moveTime;
-                // console.log('末速度:', moveY);
-                if (time < 100 && offsetY <= offsetTop && offsetY >= -offsetBottom) {
-
-                    while (Math.abs(moveY) > 1) {
-                        moveY = moveY * 0.95;
-                        offsetY = offsetY + moveY;
-                    }
-
-                    isBounce = true;
-                }
-                if (offsetY <= offsetTop && offsetY >= -offsetBottom) offsetY = Math.round(offsetY / rowH) * rowH;
-
-                if (isBounce === false) {
-                    if (offsetY > offsetTop) {
-                        offsetY = offsetTop;
-                    } else if (offsetY < -offsetBottom) {
-                        offsetY = -offsetBottom;
-                    }
-                }
-
-                content.style.transition = 'transform .3s ease 0s'; // cubic-bezier(0.25,0.1,0.25,1)
-                content.style.transform = 'translateY(' + offsetY + 'px)';
-
-            };
-            return false;
-        };
-
-        content.ontransitionend = function () {
-            // console.log('transitionend', offsetY);
-            if (offsetY > offsetTop) {
-                offsetY = offsetTop;
-            } else if (offsetY < -offsetBottom) {
-                offsetY = -offsetBottom;
+        Picker.prototype.render = function () {
+            let html = '';
+            for (const item of this.options.list) {
+                html += '<li>' + item + '</li>';
             }
-            content.style.transform = 'translateY(' + offsetY + 'px)';
+            this.options.pickerContent.innerHTML = html;
+            this.options.pickerContent.style.transform = 'translate3d(0, ' + this.maxY + 'px, 0)';;
+        }
+        Picker.prototype.handlePointerdown = function (e) {
+            // 如果是鼠标点击，只响应左键
+            if (e.pointerType === 'mouse' && e.button !== 0) {
+                return;
+            }
+            this.options.pickerColumn.setPointerCapture(e.pointerId);
+            cancelAnimationFrame(this.rafId);
+            this.isPointerdown = true;
+            this.lastY = e.clientY;
+            this.diffY = 0;
+        }
+        Picker.prototype.handlePointermove = function (e) {
+            if (this.isPointerdown) {
+                this.diffY = e.clientY - this.lastY;
+                this.translateY += this.diffY;
+                this.options.pickerContent.style.transform = 'translate3d(0, ' + this.translateY + 'px, 0)';
+                this.lastY = e.clientY;
+            }
+        }
+        Picker.prototype.handlePointerup = function (e) {
+            if (this.isPointerdown) {
+                this.isPointerdown = false;
+                this.getPositionY(this.diffY);
+                const obj = {
+                    from: this.translateY,
+                    to: this.positionY,
+                    duration: Math.abs(this.positionY - this.translateY) > 200 ? 600 : 300
+                }
+                this.raf(obj);
+            }
+        }
+        Picker.prototype.handlePointercancel = function (e) {
+            if (this.isPointerdown) {
+                this.isPointerdown = false;
+                const obj = {
+                    from: this.translateY,
+                    to: this.positionY,
+                    duration: Math.abs(this.positionY - this.translateY) > 200 ? 500 : 300
+                }
+                this.raf(obj);
+            }
+        }
+        Picker.prototype.bindEventListener = function () {
+            this.handlePointerdown = this.handlePointerdown.bind(this);
+            this.handlePointermove = this.handlePointermove.bind(this);
+            this.handlePointerup = this.handlePointerup.bind(this);
+            this.handlePointercancel = this.handlePointercancel.bind(this);
+            this.options.pickerColumn.addEventListener('pointerdown', this.handlePointerdown);
+            this.options.pickerColumn.addEventListener('pointermove', this.handlePointermove);
+            this.options.pickerColumn.addEventListener('pointerup', this.handlePointerup);
+            this.options.pickerColumn.addEventListener('pointercancel', this.handlePointercancel);
+        }
+        Picker.prototype.getPositionY = function (speed) {
+            let _speed = speed;
+            this.positionY = this.translateY;
+            while (Math.abs(_speed) > 1) {
+                _speed *= this.friction;
+                this.positionY += _speed;
+            }
+            let i = Math.trunc(this.positionY / this.itemHeight);
+            if (Math.abs(this.positionY % this.itemHeight) > this.itemHeight * 0.5) {
+                i += this.positionY > 0 ? 1 : -1;
+            }
+            this.positionY = i * this.itemHeight;
+            if (this.positionY > this.maxY) {
+                this.positionY = this.maxY;
+            } else if (this.positionY < this.minY) {
+                this.positionY = this.minY;
+            }
+            this.result = this.options.list[2 - this.positionY / this.itemHeight];
+        }
+        Picker.prototype.easeOut = function (from, to, time, duration) {
+            const change = to - from;
+            const t = time / duration;
+            return -change * t * (t - 2) + from;
+        }
+        Picker.prototype.raf = function (obj) {
+            const self = this;
+            let start;
+            let count = 0;
+            function step(timestamp) {
+                if (start === undefined) start = timestamp;
+                let time = timestamp - start;
+                if (time > obj.duration) {
+                    time = obj.duration;
+                    count++;
+                }
+                self.translateY = self.easeOut(obj.from, obj.to, time, obj.duration);
+                self.options.pickerContent.style.transform = 'translate3d(0, ' + self.translateY + 'px, 0)';
+                if (count <= 1) {
+                    self.rafId = window.requestAnimationFrame(step);
+                }
+            }
+            this.rafId = window.requestAnimationFrame(step);
         }
 
+        const hours = createList(0, 24), minutes = createList(0, 60);
+        function createList(start, end) {
+            const list = [];
+            for (i = start; i < end; i++) {
+                list[i] = i < 10 ? '0' + i : '' + i;
+            }
+            return list;
+        }
+        const pickerColumns = document.querySelectorAll('.picker-column');
+        const pickerContents = document.querySelectorAll('.picker-content');
+        const hourPicker = new Picker({
+            pickerColumn: pickerColumns[0],
+            pickerContent: pickerContents[0],
+            list: hours
+        });
+        const minutePicker = new Picker({
+            pickerColumn: pickerColumns[1],
+            pickerContent: pickerContents[1],
+            list: minutes
+        });
     </script>
 </body>
 
