@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport"
+		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>getTransitionValue</title>
+	<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		.container {
+			padding: 15px;
+		}
+
+		.transition-box {
+			width: 0px;
+			height: 20px;
+			margin-bottom: 10px;
+			background: red;
+		}
+
+		.control {
+			display: flex;
+			align-items: center;
+			width: 300px;
+		}
+
+		.control p {
+			margin-right: auto;
+		}
+
+		.control button {
+			margin-left: 10px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<div class="transition-box"></div>
+		<div class="control">
+			<p id="transitionValue">当前宽度：0px</p>
+			<button type="button" onclick="transitionStart()">开始</button>
+			<button type="button" onclick="transitionPause()">暂停</button>
+			<button type="button" onclick="transitionReset()">重置</button>
+		</div>
+	</div>
+
+	<script>
+		const transitionBox = document.querySelector('.transition-box');
+		const transitionValue = document.getElementById('transitionValue');
+		let rafId, width = 0;
+		function raf() {
+			function step(timestamp) {
+				width = parseFloat(window.getComputedStyle(transitionBox, null).getPropertyValue('width'));
+				transitionValue.innerHTML = '当前宽度：' + width + 'px';
+				rafId = window.requestAnimationFrame(step);
+			}
+			rafId = window.requestAnimationFrame(step);
+		}
+		function transitionStart() {
+			let duration = (1 - width / 300) * 5000;
+			transitionBox.style.transition = 'width ' + duration + 'ms linear';
+			transitionBox.style.width = '300px';
+			raf();
+		}
+		function transitionPause() {
+			window.cancelAnimationFrame(rafId);
+			transitionBox.style.transition = 'none';
+			transitionBox.style.width = width + 'px';
+			transitionValue.innerHTML = '当前宽度：' + width + 'px';
+		}
+		function transitionReset() {
+			width = 0;
+			transitionPause();
+		}
+	</script>
+</body>
+
+</html>

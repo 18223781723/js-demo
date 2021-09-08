@@ -1,5 +1,11 @@
 const tableList = [
 	{
+		title: 'get transition value',
+		description: 'js获取transition过渡期间的值',
+		href: 'html/getTransitionValue.html',
+		createDate: '2021-09-06'
+	},
+	{
 		title: 'virtual scroll',
 		description: '虚拟滚动列表，承载大量数据',
 		href: 'html/virtualScroll.html',
