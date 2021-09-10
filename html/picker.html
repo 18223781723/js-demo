@@ -262,7 +262,7 @@
                 const obj = {
                     from: this.translateY,
                     to: this.positionY,
-                    duration: Math.abs(this.positionY - this.translateY) > 200 ? 600 : 300
+                    duration: Math.max(Math.abs(this.positionY - this.translateY) * 1.8, 300)
                 }
                 this.raf(obj);
             }
@@ -273,7 +273,7 @@
                 const obj = {
                     from: this.translateY,
                     to: this.positionY,
-                    duration: Math.abs(this.positionY - this.translateY) > 200 ? 500 : 300
+                    duration: Math.max(Math.abs(this.positionY - this.translateY) * 1.8, 300)
                 }
                 this.raf(obj);
             }

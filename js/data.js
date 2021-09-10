@@ -1,5 +1,17 @@
 const tableList = [
 	{
+		title: 'draggable',
+		description: '拖拽排序',
+		href: 'html/draggable.html',
+		createDate: '2021-09-08'
+	},
+	{
+		title: 'bounce',
+		description: '滚动回弹',
+		href: 'html/bounce.html',
+		createDate: '2021-09-08'
+	},
+	{
 		title: 'get transition value',
 		description: 'js获取transition过渡期间的值',
 		href: 'html/getTransitionValue.html',

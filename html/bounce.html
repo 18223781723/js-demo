@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>bounce</title>
+	<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		.container {
+			height: 100vh;
+			overflow: hidden;
+			touch-action: none;
+			user-select: none;
+		}
+
+		ul {
+			list-style: none;
+		}
+
+		li {
+			height: 50px;
+			padding: 0 15px;
+			line-height: 50px;
+		}
+
+		li:not(:last-child) {
+			border-bottom: 1px solid #E6E6E6;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<ul></ul>
+	</div>
+
+	<script>
+		const container = document.querySelector('.container');
+		const ul = document.querySelector('ul');
+		render();
+		function render() {
+			let html = '';
+			for (let i = 0; i < 40; i++) {
+				html += '<li>item' + i + '</li>';
+			}
+			ul.innerHTML = html;
+		}
+		let isPointerdown = false,
+			maxY = 0,
+			minY = container.offsetHeight - ul.offsetHeight,
+			lastY = 0,
+			diffY = 0,
+			translateY = 0,
+			friction = 0.98,
+			positionY = 0,
+			rafId = 0;
+		container.addEventListener('pointerdown', function (e) {
+			// 如果是鼠标点击，只响应左键
+			if (e.pointerType === 'mouse' && e.button !== 0) {
+				return;
+			}
+			this.setPointerCapture(e.pointerId);
+			cancelAnimationFrame(rafId);
+			isPointerdown = true;
+			lastY = e.clientY;
+			diffY = 0;
+		});
+		container.addEventListener('pointermove', function (e) {
+			if (isPointerdown) {
+				diffY = e.clientY - lastY;
+				lastY = e.clientY;
+				let stepY = diffY;
+				if (translateY > maxY || translateY < minY) {
+					stepY *= 0.5;
+				}
+				translateY += stepY;
+				ul.style.transform = 'translate3d(0, ' + translateY + 'px, 0)';
+
+			}
+		});
+		container.addEventListener('pointerup', function (e) {
+			if (isPointerdown) {
+				isPointerdown = false;
+				const obj = {
+					from: translateY
+				}
+				if (translateY < maxY && translateY > minY) {
+					getPositionY(diffY);
+					obj.to = positionY;
+					let distanceY = Math.abs(positionY - translateY);
+					obj.duration = Math.max(300, distanceY);
+				} else {
+					obj.duration = 300;
+					if (translateY > maxY) {
+						obj.to = maxY
+					} else if (translateY < minY) {
+						obj.to = minY;
+					}
+				}
+				raf(obj);
+			}
+		});
+		container.addEventListener('pointercancel', function (e) {
+			if (isPointerdown) {
+				isPointerdown = false;
+			}
+		});
+
+		function getPositionY(speed) {
+			let _speed = speed, bounceY;
+			positionY = translateY;
+			while (Math.abs(_speed) > 1) {
+				_speed *= friction;
+				positionY += _speed;
+			}
+			if (positionY > maxY) {
+				bounceY = (positionY - maxY) * 0.1;
+				positionY = maxY + Math.min(bounceY, 80);
+			} else if (positionY < minY) {
+				bounceY = (minY - positionY) * 0.1;
+				positionY = minY - Math.min(bounceY, 80);
+			}
+		}
+		function easeOut(from, to, time, duration) {
+			const change = to - from;
+			const t = time / duration;
+			return -change * t * (t - 2) + from;
+		}
+		function raf(obj) {
+			let start;
+			let count = 0;
+			function step(timestamp) {
+				if (start === undefined) start = timestamp;
+				let time = timestamp - start;
+				if (time > obj.duration) {
+					time = obj.duration;
+					count++;
+				}
+				translateY = easeOut(obj.from, obj.to, time, obj.duration);
+				ul.style.transform = 'translate3d(0, ' + translateY + 'px, 0)';
+				if (count <= 1) {
+					rafId = window.requestAnimationFrame(step);
+				} else {
+					if (translateY > maxY || translateY < minY) {
+						const obj = {
+							from: translateY,
+							duration: 300
+						}
+						if (translateY > maxY) {
+							obj.to = maxY
+						} else if (translateY < minY) {
+							obj.to = minY;
+						}
+						raf(obj);
+					}
+				}
+			}
+			rafId = window.requestAnimationFrame(step);
+		}
+
+	</script>
+</body>
+
+</html>

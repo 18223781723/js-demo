@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport"
+		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>draggable</title>
+	<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		ul {
+			position: relative;
+			width: 500px;
+			max-width: 100%;
+			margin: 20px auto;
+			list-style: none;
+			touch-action: none;
+			user-select: none;
+		}
+
+		.item {
+			height: 48px;
+			margin-bottom: -1px;
+			padding-left: 15px;
+			line-height: 48px;
+			background: #FFF;
+			border: 1px solid #d6d6d6;
+		}
+
+		.item:first-child {
+			border-radius: 5px 5px 0 0;
+		}
+
+		.item:last-child {
+			border-radius: 0 0 5px 5px;
+		}
+
+		.grid {
+			display: flex;
+			flex-wrap: wrap;
+		}
+
+		.grid li {
+			width: 68px;
+			height: 68px;
+			margin: 15px 15px 0 0;
+			padding: 15px;
+			background: #FFF;
+			border: 1px solid #d6d6d6;
+		}
+
+		.active {
+			background: #c8ebfb;
+		}
+
+		.clone {
+			position: absolute;
+			left: 0;
+			top: 0;
+			right: 0;
+			z-index: 1;
+			opacity: 0.8;
+			height: 48px;
+			padding-left: 15px;
+			line-height: 48px;
+			background: #FFF;
+			border: 1px solid #d6d6d6;
+		}
+	</style>
+
+</head>
+
+<body>
+	<ul class="column">
+		<li class="item">item1</li>
+		<li class="item">item2</li>
+		<li class="item">item3</li>
+		<li class="item">item4</li>
+		<li class="item">item5</li>
+		<li class="item">item6</li>
+		<li class="item">item7</li>
+		<li class="item">item8</li>
+		<li class="item">item9</li>
+		<li class="item">item10</li>
+	</ul>
+	<ul class="grid">
+		<li>item1</li>
+		<li>item2</li>
+		<li>item3</li>
+		<li>item4</li>
+		<li>item5</li>
+		<li>item6</li>
+		<li>item7</li>
+		<li>item8</li>
+		<li>item9</li>
+		<li>item10</li>
+	</ul>
+
+	<script>
+		const column = document.querySelector('.column');
+		const grid = document.querySelector('.grid');
+		const items = column.getElementsByClassName('item');
+		let isPointerdown = false,
+			dragTarget,
+			cloneNode,
+			dropTarget,
+			lastMove,
+			diff,
+			translate, count = 0;
+		column.addEventListener('pointerdown', function (e) {
+			// 如果是鼠标点击，只响应左键
+			if (e.pointerType === 'mouse' && e.button !== 0) {
+				return;
+			}
+			isPointerdown = true;
+			this.setPointerCapture(e.pointerId);
+			dragTarget = e.target;
+			dragTarget.classList.add('active');
+			cloneNode = dragTarget.cloneNode(true);
+			cloneNode.className = 'clone';
+			this.appendChild(cloneNode);
+			lastMove = { x: e.clientX, y: e.clientY };
+			diff = { x: 0, y: 0 };
+			let i = [].indexOf.call(items, dragTarget);
+			translate = { x: 0, y: 49 * i };
+			cloneNode.style.transition = 'none';
+			cloneNode.style.transform = 'translate3d(' + translate.x + 'px, ' + translate.y + 'px, 0)';
+		});
+		column.addEventListener('pointermove', function (e) {
+			if (isPointerdown) {
+				diff = { x: e.clientX - lastMove.x, y: e.clientY - lastMove.y };
+				lastMove = { x: e.clientX, y: e.clientY };
+				translate.x += diff.x;
+				translate.y += diff.y;
+				const rect = column.getBoundingClientRect();
+				let y = e.clientY - rect.top;
+				let i = Math.floor(y / 49);
+				if (i >= 0 && i < items.length) {
+					dropTarget = items[i];
+					if (dragTarget !== dropTarget) {
+						// if (count === 1) debugger;
+						count++
+						if (dragTarget === dropTarget.previousElementSibling) {
+							dragTarget.style.transform = 'translate3d(0px, -49px, 0px)';
+							dragTarget.nextElementSibling.style.transform = 'translate3d(0px, 49px, 0px)';
+							column.insertBefore(dragTarget, dropTarget.nextElementSibling);
+						} else {
+							dragTarget.style.transform = 'translate3d(0px, 49px, 0px)';
+							dropTarget.style.transform = 'translate3d(0px, -49px, 0px)';
+							column.insertBefore(dragTarget, dropTarget);
+						}
+						window.getComputedStyle(dragTarget, null).width;
+						dragTarget.style.transition = 'transform 1500ms';
+						dragTarget.style.transform = 'translate3d(0px, 0px, 0px)';
+						dropTarget.style.transition = 'transform 1500ms';
+						dropTarget.style.transform = 'translate3d(0px, 0px, 0px)';
+					}
+				}
+				cloneNode.style.transform = 'translate3d(' + translate.x + 'px, ' + translate.y + 'px, 0)';
+			}
+		});
+		column.addEventListener('pointerup', function (e) {
+			if (isPointerdown) {
+				isPointerdown = false;
+				cloneNode.remove();
+				dragTarget.classList.remove('active');
+			}
+		});
+		column.addEventListener('pointercancel', function (e) {
+			if (isPointerdown) {
+				isPointerdown = false;
+			}
+		});
+		/* column.addEventListener('transitionend', function (e) {
+			if (dropTarget) {
+				dragTarget.style.transition = 'none';
+				dropTarget.style.transition = 'none';
+				dragTarget.style.transform = 'none';
+				dropTarget.style.transform = 'none';
+				dropTarget = null;
+			}
+		}); */
+	</script>
+</body>
+
+</html>
