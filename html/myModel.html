@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport"
+		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>myModel</title>
+	<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		.container {
+			padding: 15px;
+		}
+
+		h4 {
+			margin-bottom: 15px;
+		}
+
+		.row {
+			display: flex;
+			align-items: center;
+		}
+
+		span {
+			height: 22px;
+			margin-right: 10px;
+			font-size: 14px;
+			line-height: 22px;
+		}
+
+		input {
+			box-sizing: border-box;
+			width: 240px;
+			height: 24px;
+			line-height: 22px;
+			padding: 0 6px;
+			font-size: 14px;
+			border: 1px solid #d9d9d9;
+			border-radius: 2px;
+			outline: none;
+		}
+
+		input:focus {
+			border-color: #40a9ff;
+			box-shadow: 0 0 0 2px rgb(24 144 255 / 20%);
+		}
+
+		.print {
+			height: 22px;
+			margin-top: 10px;
+			line-height: 22px;
+			font-size: 14px;
+		}
+
+		.print::before {
+			content: 'value: '
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<h4>Object.defineProperty</h4>
+		<div class="row">
+			<span>myModel:</span>
+			<input type="text">
+		</div>
+		<div class="print"></div>
+		<h4 style="margin-top: 15px;">Proxy</h4>
+		<div class="row">
+			<span>myModel:</span>
+			<input type="text">
+		</div>
+		<div class="print"></div>
+	</div>
+	<script>
+		const inputs = document.querySelectorAll('input');
+		const prints = document.querySelectorAll('.print');
+		// Object.defineProperty
+		const a = {};
+		let initValue = '';
+		Object.defineProperty(a, 'name', {
+			configurable: false,
+			enumerable: true,
+			get: function () {
+				return initValue;
+			},
+			set: function (newValue) {
+				initValue = newValue;
+				prints[0].innerHTML = newValue;
+			}
+		});
+		inputs[0].addEventListener('input', function (e) {
+			a.name = this.value;
+		});
+		// Proxy
+		const proxy = new Proxy({ name: '' }, {
+			get(obj, key) {
+				return obj[key];
+			},
+			set(obj, key, newValue) {
+				obj[key] = newValue;
+				prints[1].innerHTML = newValue;
+			}
+		});
+		inputs[1].addEventListener('input', function (e) {
+			proxy.name = this.value;
+		});
+	</script>
+</body>
+
+</html>

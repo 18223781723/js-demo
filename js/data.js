@@ -1,5 +1,11 @@
 const tableList = [
 	{
+		title: 'my model',
+		description: 'Object.defineProperty，Proxy实现简单双向绑定',
+		href: 'html/myModel.html',
+		createDate: '2021-09-16'
+	},
+	{
 		title: 'draggable',
 		description: '拖拽排序',
 		href: 'html/draggable.html',
