@@ -16,6 +16,8 @@
 		}
 
 		.container {
+			max-width: 450px;
+			margin: 0 auto;
 			padding: 15px;
 		}
 
@@ -24,8 +26,6 @@
 		}
 
 		ul {
-			position: relative;
-			list-style: none;
 			touch-action: none;
 			user-select: none;
 		}
@@ -41,6 +41,7 @@
 			line-height: 48px;
 			background: #FFF;
 			border: 1px solid #d6d6d6;
+			list-style: none;
 		}
 
 		.column-item:first-child {
@@ -65,6 +66,7 @@
 			margin: 0 15px 15px 0;
 			background: #FFF;
 			border: 1px solid #d6d6d6;
+			list-style: none;
 		}
 
 		.active {
@@ -72,21 +74,23 @@
 		}
 
 		.clone-column-item {
-			position: absolute;
+			position: fixed;
 			left: 0;
 			top: 0;
 			z-index: 1;
-			width: 100%;
+			width: calc(100% - 30px);
+			max-width: 420px;
 			height: 50px;
 			padding-left: 15px;
 			line-height: 48px;
 			background: #FFF;
 			border: 1px solid #d6d6d6;
 			opacity: 0.8;
+			list-style: none;
 		}
 
 		.clone-grid-item {
-			position: absolute;
+			position: fixed;
 			left: 0;
 			top: 0;
 			z-index: 1;
@@ -97,6 +101,7 @@
 			background: #FFF;
 			border: 1px solid #d6d6d6;
 			opacity: 0.8;
+			list-style: none;
 		}
 	</style>
 
@@ -136,7 +141,6 @@
 		class Draggable {
 			constructor(options) {
 				this.parent = options.element; // 父级元素
-				this.children = null;
 				this.cloneElementClassName = options.cloneElementClassName;
 				this.isPointerdown = false;
 				this.diff = { x: 0, y: 0 };
@@ -148,20 +152,13 @@
 				this.init();
 			}
 			init() {
-				this.addClassName();
 				this.getRect();
 				this.bindEventListener();
-			}
-			addClassName() {
-				for (const item of this.parent.children) {
-					item.classList.add('draggable-item');
-				}
-				this.children = this.parent.getElementsByClassName('draggable-item');
 			}
 			// 获取元素位置信息
 			getRect() {
 				this.rectList.length = 0;
-				for (const item of this.children) {
+				for (const item of this.parent.children) {
 					this.rectList.push(item.getBoundingClientRect());
 				}
 			}
@@ -182,14 +179,13 @@
 				this.clone.element = this.drag.element.cloneNode(true);
 				this.clone.element.className = this.cloneElementClassName;
 				this.clone.element.style.transition = 'none';
-				const i = [].indexOf.call(this.children, this.drag.element);
-				const rect = this.parent.getBoundingClientRect();
-				this.clone.x = this.rectList[i].left - rect.left;
-				this.clone.y = this.rectList[i].top - rect.top;
+				const i = [].indexOf.call(this.parent.children, this.drag.element);
+				this.clone.x = this.rectList[i].left;
+				this.clone.y = this.rectList[i].top;
 				this.drag.index = i;
 				this.drag.lastIndex = i;
 				this.clone.element.style.transform = 'translate3d(' + this.clone.x + 'px, ' + this.clone.y + 'px, 0)';
-				this.parent.appendChild(this.clone.element);
+				document.body.appendChild(this.clone.element);
 			}
 			handlePointermove(e) {
 				if (this.isPointerdown) {
@@ -204,7 +200,7 @@
 						// 碰撞检测
 						if (e.clientX > this.rectList[i].left && e.clientX < this.rectList[i].right &&
 							e.clientY > this.rectList[i].top && e.clientY < this.rectList[i].bottom) {
-							this.drop.element = this.children[i];
+							this.drop.element = this.parent.children[i];
 							this.drop.lastIndex = i;
 							if (this.drag.element !== this.drop.element) {
 								if (this.drag.index < i) {
@@ -249,31 +245,28 @@
 					this.clone.element.remove();
 				}
 			}
-			updateRect() {
-				this.getRect();
-			}
 			bindEventListener() {
 				this.handlePointerdown = this.handlePointerdown.bind(this);
 				this.handlePointermove = this.handlePointermove.bind(this);
 				this.handlePointerup = this.handlePointerup.bind(this);
 				this.handlePointercancel = this.handlePointercancel.bind(this);
-				this.updateRect = this.updateRect.bind(this);
+				this.getRect = this.getRect.bind(this);
 				this.parent.addEventListener('pointerdown', this.handlePointerdown);
 				this.parent.addEventListener('pointermove', this.handlePointermove);
 				this.parent.addEventListener('pointerup', this.handlePointerup);
 				this.parent.addEventListener('pointercancel', this.handlePointercancel);
-				window.addEventListener('scroll', this.updateRect);
-				window.addEventListener('resize', this.updateRect);
-				window.addEventListener('orientationchange', this.updateRect);
+				window.addEventListener('scroll', this.getRect);
+				window.addEventListener('resize', this.getRect);
+				window.addEventListener('orientationchange', this.getRect);
 			}
 			unbindEventListener() {
 				this.parent.removeEventListener('pointerdown', this.handlePointerdown);
 				this.parent.removeEventListener('pointermove', this.handlePointermove);
 				this.parent.removeEventListener('pointerup', this.handlePointerup);
 				this.parent.removeEventListener('pointercancel', this.handlePointercancel);
-				window.removeEventListener('scroll', this.updateRect);
-				window.removeEventListener('resize', this.updateRect);
-				window.removeEventListener('orientationchange', this.updateRect);
+				window.removeEventListener('scroll', this.getRect);
+				window.removeEventListener('resize', this.getRect);
+				window.removeEventListener('orientationchange', this.getRect);
 			}
 		}
 		new Draggable({
