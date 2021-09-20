@@ -48,9 +48,9 @@ const tableList = [
 		createDate: '2021-08-11'
 	},
 	{
-		title: 'wheel',
+		title: 'wheel zoom',
 		description: '鼠标滚轮缩放图片',
-		href: 'html/wheel.html',
+		href: 'html/wheelZoom.html',
 		createDate: '2021-08-08'
 	},
 	{
