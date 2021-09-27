@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport"
+		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>wheelRotate</title>
+	<link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		.container {
+			height: 100vh;
+			background: #000;
+			overflow: hidden;
+		}
+
+		img {
+			display: block;
+			width: 400px;
+			height: 320px;
+			transform: translate3d(0, 0, 0) rotate(0deg);
+		}
+
+		.log {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			z-index: 99;
+			padding: 5px;
+			color: #FFF;
+			font-size: 12px;
+			line-height: 18px;
+			pointer-events: none;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<img id="image" src="../images/liya.jpg" alt="">
+	</div>
+	<div class="log"></div>
+
+	<script>
+		// 获取dom
+		const image = document.getElementById('image');
+		const log = document.querySelector('.log');
+		// 全局变量
+		let result = { width: 400, height: 320 },
+			x = (window.innerWidth - result.width) * 0.5,
+			y = (window.innerHeight - result.height) * 0.5,
+			rotate = 0;
+		// 居中显示
+		image.style.transform = 'translate3d(' + x + 'px, ' + y + 'px, 0) rotate(' + rotate + 'deg)';
+		log.innerHTML = `x = ${x.toFixed(0)}<br>y = ${y.toFixed(0)}<br>rotate = ${rotate}`;
+		// 绑定wheel事件
+		image.addEventListener('wheel', function (e) {
+			let angle = 10;
+			// 逆时针旋转
+			if (e.deltaY > 0) {
+				angle = -10;
+			}
+			// transform-origin相对于视口左上角的坐标
+			const origin = {
+				x: result.width * 0.5 + x,
+				y: result.height * 0.5 + y
+			};
+			// 以鼠标位置为原点(0, 0)，计算transform-origin的相对坐标
+			const a = {
+				x: origin.x - e.clientX,
+				y: e.clientY - origin.y
+			};
+			// 计算点a绕鼠标原点(0, 0)旋转angle度后的坐标，设为点b
+			const b = {
+				x: (a.x - 0) * Math.cos(angle * Math.PI / 180) + (a.y - 0) * Math.sin(angle * Math.PI / 180) + 0,
+				y: (a.x - 0) * Math.sin(angle * Math.PI / 180) - (a.y - 0) * Math.cos(angle * Math.PI / 180) + 0
+			}
+			// 计算偏移量
+			x -= a.x - b.x;
+			y += a.y + b.y;
+			rotate = (rotate + angle) % 360;
+			this.style.transform = 'translate3d(' + x + 'px, ' + y + 'px, 0) rotate(' + rotate + 'deg)';
+			log.innerHTML = `x = ${x.toFixed(0)}<br>y = ${y.toFixed(0)}<br>rotate = ${rotate}`;
+		});
+	</script>
+</body>
+
+</html>

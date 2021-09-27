@@ -36,9 +36,9 @@ const tableList = [
 		createDate: '2021-08-20'
 	},
 	{
-		title: 'rotate',
-		description: '滚轮旋转，以鼠标位置为中心',
-		href: 'html/rotate.html',
+		title: 'wheel rotate',
+		description: '以鼠标位置为中心滚轮旋转图片',
+		href: 'html/wheelRotate.html',
 		createDate: '2021-08-20'
 	},
 	{
@@ -49,7 +49,7 @@ const tableList = [
 	},
 	{
 		title: 'wheel zoom',
-		description: '鼠标滚轮缩放图片',
+		description: '以鼠标位置为中心滚轮缩放图片',
 		href: 'html/wheelZoom.html',
 		createDate: '2021-08-08'
 	},
