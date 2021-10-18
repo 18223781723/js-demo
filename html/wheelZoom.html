@@ -59,7 +59,6 @@
 			minScale = 0.5,
 			maxScale = 4,
 			isPointerdown = false, // 按下标识
-			point = { x: 0, y: 0 }, // 第一个点坐标
 			diff = { x: 0, y: 0 }, // 相对于上一次pointermove移动差值
 			lastPointermove = { x: 0, y: 0 }; // 用于计算diff
 
@@ -115,16 +114,15 @@
 			image.addEventListener('pointerdown', function (e) {
 				isPointerdown = true;
 				image.setPointerCapture(e.pointerId);
-				point = { x: e.clientX, y: e.clientY };
 				lastPointermove = { x: e.clientX, y: e.clientY };
 			});
 			// 绑定 pointermove
 			image.addEventListener('pointermove', function (e) {
 				if (isPointerdown) {
-					const current1 = { x: e.clientX, y: e.clientY };
-					diff.x = current1.x - lastPointermove.x;
-					diff.y = current1.y - lastPointermove.y;
-					lastPointermove = { x: current1.x, y: current1.y };
+					const current = { x: e.clientX, y: e.clientY };
+					diff.x = current.x - lastPointermove.x;
+					diff.y = current.y - lastPointermove.y;
+					lastPointermove = { x: current.x, y: current.y };
 					x += diff.x;
 					y += diff.y;
 					image.style.transform = 'translate3d(' + x + 'px, ' + y + 'px, 0) scale(' + scale + ')';
