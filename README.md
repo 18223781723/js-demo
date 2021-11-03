@@ -3,4 +3,4 @@
 
 Demo: http://jsdemo.codeman.top
 
-![二维码](https://github.com/18223781723/js-demo/blob/main/src/images/qrcode.png)
+![二维码](https://github.com/18223781723/js-demo/blob/master/src/images/qrcode.png)
