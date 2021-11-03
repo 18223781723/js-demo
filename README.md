@@ -1,1 +1,6 @@
-### 分享一些使用原生javascript开发的小功能
+# js-demo
+基于JavaScript开发的小功能。
+
+Demo: http://jsdemo.codeman.top
+
+![二维码](https://github.com/18223781723/js-demo/blob/main/src/images/qrcode.png)
