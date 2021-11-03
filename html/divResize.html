@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>divResize</title>
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            height: 100vh;
+            background: #000;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .resize {
+            position: relative;
+            outline: 1px solid #1890ff;
+            touch-action: none;
+        }
+
+        img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .line {
+            position: absolute;
+        }
+
+        .line-n {
+            left: 0;
+            top: -3px;
+            width: 100%;
+            height: 6px;
+            cursor: n-resize;
+        }
+
+        .line-e {
+            top: 0;
+            right: -3px;
+            width: 6px;
+            height: 100%;
+            cursor: e-resize;
+        }
+
+        .line-s {
+            left: 0;
+            bottom: -3px;
+            width: 100%;
+            height: 6px;
+            cursor: s-resize;
+        }
+
+        .line-w {
+            top: 0;
+            left: -3px;
+            width: 6px;
+            height: 100%;
+            cursor: w-resize;
+        }
+
+        .point {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #1890ff;
+        }
+
+        .point-n {
+            top: -3px;
+            left: calc(50% - 3px);
+            cursor: n-resize;
+        }
+
+        .point-e {
+            right: -3px;
+            top: calc(50% - 3px);
+            cursor: e-resize;
+        }
+
+        .point-s {
+            bottom: -3px;
+            left: calc(50% - 3px);
+            cursor: s-resize;
+        }
+
+        .point-w {
+            left: -3px;
+            top: calc(50% - 3px);
+            cursor: w-resize;
+        }
+
+        .point-ne {
+            top: -3px;
+            right: -3px;
+            cursor: ne-resize;
+        }
+
+        .point-se {
+            bottom: -3px;
+            right: -3px;
+            cursor: se-resize;
+        }
+
+        .point-sw {
+            left: -3px;
+            bottom: -3px;
+            cursor: sw-resize;
+        }
+
+        .point-nw {
+            left: -3px;
+            top: -3px;
+            cursor: nw-resize;
+        }
+
+        .log {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 99;
+            padding: 6px;
+            color: #FFF;
+            font-size: 12px;
+            line-height: 18px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="resize" data-key="drag">
+            <img src="../images/liya.jpg" alt="">
+            <div class="line line-n" data-key="n"></div>
+            <div class="line line-e" data-key="e"></div>
+            <div class="line line-s" data-key="s"></div>
+            <div class="line line-w" data-key="w"></div>
+            <div class="point point-n" data-key="n"></div>
+            <div class="point point-e" data-key="e"></div>
+            <div class="point point-s" data-key="s"></div>
+            <div class="point point-w" data-key="w"></div>
+            <div class="point point-ne" data-key="ne"></div>
+            <div class="point point-se" data-key="se"></div>
+            <div class="point point-sw" data-key="sw"></div>
+            <div class="point point-nw" data-key="nw"></div>
+        </div>
+    </div>
+    <div class="log"></div>
+
+    <script>
+        const box = document.querySelector('.resize');
+        const log = document.querySelector('.log');
+        let width = 200,
+            height = 160,
+            minWidth = 100,
+            minHeight = 80,
+            x = (window.innerWidth - width) * 0.5,
+            y = (window.innerHeight - height) * 0.5,
+            isPointerdown = false,
+            diff = { x: 0, y: 0 },
+            lastPointermove = { x: 0, y: 0 },
+            key = '',
+            rect;
+        box.style.width = width + 'px';
+        box.style.height = height + 'px';
+        box.style.transform = 'translate3d(' + x + 'px, ' + y + 'px, 0px)';
+        log.innerHTML = `x = ${x}<br>y = ${y}<br>width = ${width}<br>height = ${height}`;
+        const move = {
+            drag: function () {
+                x += diff.x;
+                y += diff.y;
+            },
+            n: function (e) {
+                if (rect.bottom - e.clientY > minHeight) {
+                    height = rect.bottom - e.clientY;
+                    y = e.clientY;
+                }
+            },
+            e: function (e) {
+                if (e.clientX - rect.left > minWidth) {
+                    width = e.clientX - rect.left;
+                }
+            },
+            s: function (e) {
+                if (e.clientY - rect.top > minHeight) {
+                    height = e.clientY - rect.top;
+                }
+            },
+            w: function (e) {
+                if (rect.right - e.clientX > minWidth) {
+                    width = rect.right - e.clientX;
+                    x = e.clientX;
+                }
+            },
+            ne: function (e) {
+                this.n(e);
+                this.e(e);
+            },
+            se: function (e) {
+                this.s(e);
+                this.e(e);
+            },
+            sw: function (e) {
+                this.s(e);
+                this.w(e);
+            },
+            nw: function (e) {
+                this.n(e);
+                this.w(e);
+            }
+        }
+
+        box.addEventListener('pointerdown', function (e) {
+            isPointerdown = true;
+            e.target.setPointerCapture(e.pointerId);
+            lastPointermove = { x: e.clientX, y: e.clientY };
+            key = e.target.dataset.key;
+            rect = box.getBoundingClientRect();
+        });
+        box.addEventListener('pointermove', function (e) {
+            if (isPointerdown) {
+                const current = { x: e.clientX, y: e.clientY };
+                diff.x = current.x - lastPointermove.x;
+                diff.y = current.y - lastPointermove.y;
+                lastPointermove = { x: current.x, y: current.y };
+                move[key](e);
+                box.style.width = width + 'px';
+                box.style.height = height + 'px';
+                box.style.transform = 'translate3d(' + x + 'px, ' + y + 'px, 0)';
+                log.innerHTML = `x = ${x}<br>y = ${y}<br>width = ${width}<br>height = ${height}`;
+                e.preventDefault();
+            }
+        });
+        box.addEventListener('pointerup', function (e) {
+            if (isPointerdown) {
+                isPointerdown = false;
+            }
+        });
+        box.addEventListener('pointercancel', function (e) {
+            if (isPointerdown) {
+                isPointerdown = false;
+            }
+        });
+    </script>
+</body>
+
+</html>

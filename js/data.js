@@ -1,5 +1,11 @@
 const tableList = [
 	{
+		title: 'div resize',
+		description: 'div拖拽拉伸',
+		href: 'html/divResize.html',
+		createDate: '2021-10-12'
+	},
+	{
 		title: 'my model',
 		description: 'Object.defineProperty，Proxy实现简单双向绑定',
 		href: 'html/myModel.html',
@@ -7,7 +13,7 @@ const tableList = [
 	},
 	{
 		title: 'draggable',
-		description: '拖拽排序',
+		description: '拖拽排序，仿Sortable.js',
 		href: 'html/draggable.html',
 		createDate: '2021-09-14'
 	},
