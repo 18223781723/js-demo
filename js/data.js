@@ -1,5 +1,11 @@
 const tableList = [
 	{
+		title: 'pickerTransition',
+		description: 'picker选择器',
+		href: 'html/pickerTransition.html',
+		createDate: '2021-11-29'
+	},
+	{
 		title: 'dragAndDrop',
 		description: '拖拽排序，仿angular cdk',
 		href: 'html/dragAndDrop.html',

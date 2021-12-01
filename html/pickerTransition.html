@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>pickerTransition</title>
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .btn {
+            height: 32px;
+            padding: 0 15px;
+            text-align: center;
+            font-size: 14px;
+            line-height: 32px;
+            color: #FFF;
+            border: none;
+            background: #1890ff;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        .mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 999;
+            background: rgba(0, 0, 0, .6);
+            animation: fadeIn .3s forwards;
+        }
+
+        .slide-box {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 15px;
+            border-radius: 10px 10px 0 0;
+            background: #FFF;
+            user-select: none;
+        }
+
+        .fade-in {
+            animation: fadeIn .3s forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .fade-out {
+            animation: fadeOut .3s forwards;
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 10;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+
+        .slide-up {
+            animation: slideUp .3s forwards;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translate3d(0, 100%, 0);
+            }
+
+            to {
+                transform: translate3d(0, 0, 0);
+            }
+        }
+
+        .slide-down {
+            animation: slideDown .3s forwards;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translate3d(0, 0, 0);
+            }
+
+            to {
+                transform: translate3d(0, 100%, 0);
+            }
+        }
+
+        h4 {
+            height: 24px;
+            margin-bottom: 16px;
+            font-size: 16px;
+            line-height: 24px;
+            text-align: center;
+        }
+
+        .picker-group {
+            display: flex;
+        }
+
+        .picker-column {
+            position: relative;
+            flex: 1;
+            height: 200px;
+            margin: 0 auto;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        .picker-column::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1;
+            height: 79px;
+            border-bottom: 1px solid #ebebeb;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, .9), rgba(255, 255, 255, .6));
+        }
+
+        .picker-column::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1;
+            height: 79px;
+            border-top: 1px solid #ebebeb;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, .6), rgba(255, 255, 255, .9));
+        }
+
+        li {
+            list-style: none;
+            font-size: 14px;
+            line-height: 40px;
+            text-align: center;
+        }
+
+        .btn-sure {
+            display: block;
+            margin: 15px auto 0;
+        }
+    </style>
+</head>
+
+<body>
+    <button class="btn btn-open" type="button">时间选择器</button>
+    <div hidden class="mask">
+        <div class="slide-box">
+            <h4>时间选择器</h4>
+            <div class="picker-group">
+                <div class="picker-column">
+                    <ul class="picker-content"></ul>
+                </div>
+                <div class="picker-column">
+                    <ul class="picker-content"></ul>
+                </div>
+            </div>
+            <button class="btn btn-sure" type="button">确定</button>
+        </div>
+    </div>
+    <script>
+        const btnOpen = document.querySelector('.btn-open');
+        const btnSure = document.querySelector('.btn-sure');
+        const mask = document.querySelector('.mask');
+        const slide = document.querySelector('.slide-box');
+        btnOpen.addEventListener('click', function () {
+            mask.hidden = false;
+            mask.classList.add('fade-in');
+            slide.classList.add('slide-up');
+        });
+        mask.addEventListener('click', function (e) {
+            if (e.target.className.includes('mask')) {
+                mask.classList.remove('fade-in');
+                mask.classList.add('fade-out');
+                slide.classList.remove('slide-up');
+                slide.classList.add('slide-down');
+            }
+        });
+        mask.addEventListener('animationend', function (e) {
+            if (e.target.className.includes('fade-out')) {
+                mask.hidden = true;
+                mask.classList.remove('fade-out');
+                slide.classList.remove('slide-down');
+            }
+        });
+        btnSure.addEventListener('click', function (e) {
+            alert(hourPicker.result + ' : ' + minutePicker.result);
+            e.preventDefault();
+        });
+        /**
+         * 原生javascript实现picker
+         */
+        class Picker {
+            constructor(options) {
+                this.options = Object.assign({}, options);
+                this.isPointerdown = false;
+                this.itemHeight = 40; // 列表项高度
+                this.maxY = this.itemHeight * 2;
+                this.minY = this.itemHeight * (3 - this.options.list.length);
+                this.lastY = 0;
+                this.diffY = 0;
+                this.translateY = 0; // 当前位置
+                this.friction = 0.95; // 摩擦系数
+                this.distanceY = 0; // 滑动距离
+                this.result = this.options.list[0];
+                this.render();
+                this.bindEventListener();
+            }
+            render() {
+                let html = '';
+                for (const item of this.options.list) {
+                    html += '<li>' + item + '</li>';
+                }
+                this.options.pickerContent.innerHTML = html;
+                this.options.pickerContent.style.transform = 'translate3d(0px, ' + this.maxY + 'px, 0px)';
+            }
+            handlePointerdown(e) {
+                // 如果是鼠标点击，只响应左键
+                if (e.pointerType === 'mouse' && e.button !== 0) {
+                    return;
+                }
+                this.options.pickerColumn.setPointerCapture(e.pointerId);
+                this.isPointerdown = true;
+                this.lastY = e.clientY;
+                this.diffY = 0;
+                this.distanceY = 0;
+                this.getTransform();
+                this.options.pickerContent.style.transform = 'translate3d(0px, ' + this.translateY + 'px, 0px)';
+                this.options.pickerContent.style.transition = 'none';
+            }
+            handlePointermove(e) {
+                if (this.isPointerdown) {
+                    this.diffY = e.clientY - this.lastY;
+                    this.translateY += this.diffY;
+                    this.lastY = e.clientY;
+                    this.options.pickerContent.style.transform = 'translate3d(0px, ' + this.translateY + 'px, 0px)';
+                }
+            }
+            handlePointerup(e) {
+                if (this.isPointerdown) {
+                    this.isPointerdown = false;
+                    this.getTranslateY();
+                    // 滑动距离与时长成正比且最短时长为300ms
+                    const duration = Math.max(Math.abs(this.distanceY) * 1.5, 300);
+                    this.options.pickerContent.style.transition = 'transform ' + duration + 'ms ease';
+                    this.options.pickerContent.style.transform = 'translate3d(0px, ' + this.translateY + 'px, 0px)';
+                }
+            }
+            handlePointercancel(e) {
+                if (this.isPointerdown) {
+                    this.isPointerdown = false;
+                }
+            }
+            bindEventListener() {
+                this.handlePointerdown = this.handlePointerdown.bind(this);
+                this.handlePointermove = this.handlePointermove.bind(this);
+                this.handlePointerup = this.handlePointerup.bind(this);
+                this.handlePointercancel = this.handlePointercancel.bind(this);
+                this.options.pickerColumn.addEventListener('pointerdown', this.handlePointerdown);
+                this.options.pickerColumn.addEventListener('pointermove', this.handlePointermove);
+                this.options.pickerColumn.addEventListener('pointerup', this.handlePointerup);
+                this.options.pickerColumn.addEventListener('pointercancel', this.handlePointercancel);
+            }
+            getTransform() {
+                const transform = window.getComputedStyle(this.options.pickerContent).getPropertyValue('transform');
+                this.translateY = parseFloat(transform.split(',')[5]);
+            }
+            getTranslateY() {
+                let speed = this.diffY;
+                while (Math.abs(speed) > 1) {
+                    speed *= this.friction;
+                    this.distanceY += speed;
+                }
+                // 边界判断
+                let y = this.translateY + this.distanceY;
+                if (y > this.maxY) {
+                    this.translateY = this.maxY;
+                    this.distanceY = this.maxY - this.translateY;
+                } else if (y < this.minY) {
+                    this.translateY = this.minY;
+                    this.distanceY = this.minY - this.translateY;
+                } else {
+                    this.translateY = y;
+                }
+                // 计算停止位置使其为itemHeight的整数倍
+                let i = Math.trunc(this.translateY / this.itemHeight);
+                if (Math.abs(this.distanceY) > this.itemHeight) {
+                    const flag = Math.abs(this.translateY % this.itemHeight) > this.itemHeight * 0.5;
+                    // 上滑
+                    if (this.diffY < 0) {
+                        i += flag ? -1 : 0;
+                    } else {
+                        i += flag ? 1 : 0
+                    }
+                }
+                this.translateY = i * this.itemHeight;
+                this.result = this.options.list[2 - this.translateY / this.itemHeight];
+            }
+        }
+
+        // 调用方式
+        function createList(start, end) {
+            const list = [];
+            for (i = start; i < end; i++) {
+                list[i] = i < 10 ? '0' + i : '' + i;
+            }
+            return list;
+        }
+        const hours = createList(0, 24), minutes = createList(0, 60);
+        const pickerColumns = document.querySelectorAll('.picker-column');
+        const pickerContents = document.querySelectorAll('.picker-content');
+        const hourPicker = new Picker({
+            pickerColumn: pickerColumns[0],
+            pickerContent: pickerContents[0],
+            list: hours
+        });
+        const minutePicker = new Picker({
+            pickerColumn: pickerColumns[1],
+            pickerContent: pickerContents[1],
+            list: minutes
+        });
+    </script>
+</body>
+
+</html>
