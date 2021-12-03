@@ -12,6 +12,12 @@ const tableList = [
 		createDate: '2021-11-01'
 	},
 	{
+		title: 'ps transform',
+		description: '仿ps变换操作',
+		href: 'html/psTransform.html',
+		createDate: '2021-10-19'
+	},
+	{
 		title: 'div resize',
 		description: 'div拖拽拉伸',
 		href: 'html/divResize.html',

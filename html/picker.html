@@ -273,7 +273,7 @@
                 const obj = {
                     from: this.translateY,
                     to: this.positionY,
-                    duration: Math.max(Math.abs(this.positionY - this.translateY) * 1.8, 300)
+                    duration: Math.max(Math.abs(this.positionY - this.translateY) * 1.5, 300)
                 }
                 this.raf(obj);
             }
@@ -295,10 +295,8 @@
                 _speed *= this.friction;
                 this.positionY += _speed;
             }
-            let i = Math.trunc(this.positionY / this.itemHeight);
-            if (Math.abs(this.positionY % this.itemHeight) > this.itemHeight * 0.5) {
-                i += this.positionY > 0 ? 1 : -1;
-            }
+            // 计算停止位置使其为itemHeight的整数倍
+            let i = Math.round(this.positionY / this.itemHeight);
             this.positionY = i * this.itemHeight;
             if (this.positionY > this.maxY) {
                 this.positionY = this.maxY;

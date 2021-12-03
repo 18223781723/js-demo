@@ -305,16 +305,7 @@
                     this.translateY = y;
                 }
                 // 计算停止位置使其为itemHeight的整数倍
-                let i = Math.trunc(this.translateY / this.itemHeight);
-                if (Math.abs(this.distanceY) > this.itemHeight) {
-                    const flag = Math.abs(this.translateY % this.itemHeight) > this.itemHeight * 0.5;
-                    // 上滑
-                    if (this.diffY < 0) {
-                        i += flag ? -1 : 0;
-                    } else {
-                        i += flag ? 1 : 0
-                    }
-                }
+                let i = Math.round(this.translateY / this.itemHeight);
                 this.translateY = i * this.itemHeight;
                 this.result = this.options.list[2 - this.translateY / this.itemHeight];
             }
