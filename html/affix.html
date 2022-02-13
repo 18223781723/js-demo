@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>affix</title>
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            height: 2000px;
+            padding: 150px 15px 0;
+        }
+
+        .btn-wrap {
+            height: 32px;
+        }
+
+        button {
+            display: block;
+            height: 32px;
+            padding: 0 15px;
+            font-size: 14px;
+            line-height: 30px;
+            color: #FFF;
+            border: 1px solid transparent;
+            background: #1890ff;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        .fixed {
+            position: fixed;
+            top: 0;
+            left: 15px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div class="btn-wrap">
+        <button id="btn" type="button">图钉</button>
+    </div>
+</div>
+<script>
+    const wrap = document.getElementsByClassName('btn-wrap')[0];
+    const btn = document.getElementById('btn');
+    window.addEventListener('scroll', function (e) {
+        const rect = wrap.getBoundingClientRect();
+        if (rect.top <= 0) {
+            btn.classList.add('fixed');
+        } else {
+            btn.classList.remove('fixed');
+        }
+    })
+</script>
+</body>
+
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>sticky</title>
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        ul, li {
+            list-style: none
+        }
+
+        .group, .children {
+            height: 40px;
+            line-height: 40px;
+            border-bottom: 1px solid #d9d9d9;
+            background: #FFF;
+        }
+
+        .group {
+            position: sticky;
+            top: 0;
+            font-weight: bold;
+            color: #1890FF;
+            padding: 0 15px;
+        }
+
+        .children {
+            padding: 0 30px;
+        }
+
+    </style>
+</head>
+
+<body>
+<ul id="list"></ul>
+</body>
+<script>
+    const list = [
+        {
+            group: 'A',
+            children: ['Apple', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'B',
+            children: ['B', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'C',
+            children: ['C', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'D',
+            children: ['D', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'E',
+            children: ['E', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'F',
+            children: ['F', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'G',
+            children: ['G', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'H',
+            children: ['H', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'I',
+            children: ['I', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'J',
+            children: ['J', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'K',
+            children: ['K', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'L',
+            children: ['L', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'M',
+            children: ['M', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'N',
+            children: ['N', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'O',
+            children: ['O', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'P',
+            children: ['P', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'Q',
+            children: ['Q', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'R',
+            children: ['R', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'S',
+            children: ['S', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'T',
+            children: ['T', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'U',
+            children: ['U', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'V',
+            children: ['V', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'W',
+            children: ['World', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'X',
+            children: ['X', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'Y',
+            children: ['Yes', '爱琴海', '爱情', '爱慕', '爱上你']
+        },
+        {
+            group: 'Z',
+            children: ['Zebra', '爱琴海', '爱情', '爱慕', '爱上你']
+        }
+    ];
+
+    function render() {
+        let html = '';
+        for (const i of list) {
+            html += '<li><ul><li class="group">' + i.group + '</li>';
+            for (const j of i.children) {
+                html += '<li class="children">' + j + '</li>';
+            }
+            html += '</ul></li>';
+        }
+        document.getElementById('list').insertAdjacentHTML('beforeend', html)
+    }
+
+    render();
+</script>
+</html>

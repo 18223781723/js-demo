@@ -1,5 +1,17 @@
 const tableList = [
 	{
+		title: 'affix',
+		description: '图钉',
+		href: 'html/affix.html',
+		createDate: '2022-02-12'
+	},
+	{
+		title: 'sticky',
+		description: '粘贴定位',
+		href: 'html/sticky.html',
+		createDate: '2022-02-12'
+	},
+	{
 		title: 'pickerTransition',
 		description: 'picker选择器',
 		href: 'html/pickerTransition.html',
