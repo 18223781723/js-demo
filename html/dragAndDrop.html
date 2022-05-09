@@ -87,6 +87,7 @@
             border: 1px solid #d6d6d6;
             opacity: 0.8;
             list-style: none;
+			pointer-events: none;
         }
 
         .clone-grid-item {
@@ -102,6 +103,7 @@
             border: 1px solid #d6d6d6;
             opacity: 0.8;
             list-style: none;
+			pointer-events: none;
         }
     </style>
 
@@ -201,7 +203,7 @@
                     this.clone.element.style.transform = 'translate3d(' + this.clone.x + 'px, ' + this.clone.y + 'px, 0)';
                     for (let i = 0; i < this.rectList.length; i++) {
                         // 碰撞检测
-                        if (this.drag.index !== i && e.clientX > this.rectList[i].left && e.clientX < this.rectList[i].right &&
+                        if (i !== this.drag.index && this.drag.index !== i && e.clientX > this.rectList[i].left && e.clientX < this.rectList[i].right &&
                             e.clientY > this.rectList[i].top && e.clientY < this.rectList[i].bottom) {
                             if (this.drag.index < i) {
                                 for (let j = this.drag.index; j < i; j++) {
