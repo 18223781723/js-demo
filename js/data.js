@@ -1,5 +1,11 @@
 const tableList = [
 	{
+		title: 'control',
+		description: '旋转拖拽拉伸',
+		href: 'html/control.html',
+		createDate: '2022-06-14'
+	},
+	{
 		title: 'affix',
 		description: '图钉',
 		href: 'html/affix.html',
