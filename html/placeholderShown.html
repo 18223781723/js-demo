@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>placeholderShown</title>
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+    <style>
+        body {
+            margin: 0;
+            padding: 50px;
+            line-height: 1.5;
+        }
+
+        div {
+            position: relative;
+            width: fit-content;
+        }
+
+        input {
+            height: 24px;
+            padding: 10px 15px;
+            font-size: 16px;
+            line-height: 1.5;
+            outline: none;
+            border: 1px solid #ececec;
+            border-radius: 4px;
+            transition: .3s;
+        }
+
+        /* 对于不支持placeholder-shown的浏览器可以正常显示placeholder */
+        input:placeholder-shown::placeholder {
+            color: transparent;
+        }
+
+        input:focus {
+            border-color: #4072ee;
+        }
+
+        input:focus~label,
+        input:not(:placeholder-shown)~label {
+            padding: 0 2px;
+            color: #4072ee;
+            background: #fff;
+            transform: translateY(-22px) scale(.8);
+        }
+
+        label {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            font-size: 16px;
+            pointer-events: none;
+            transition: .3s;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <input type="text" placeholder="邮箱">
+        <label>邮箱</label>
+    </div>
+</body>
+
+</html>
