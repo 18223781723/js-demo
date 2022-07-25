@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>pullToRefresh</title>
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+    <style>
+        body {
+            margin: 0;
+            padding-top: 50px;
+        }
+
+        .pull-to-refresh {
+            height: 500px;
+            overflow: auto;
+        }
+
+        ul {
+            margin: 0;
+            padding-left: 0;
+            user-select: none;
+        }
+
+        li {
+            list-style: none;
+            height: 44px;
+            padding: 0 16px;
+            line-height: 44px;
+            border-bottom: 1px solid #ececec;
+        }
+
+        .refresh {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            height: 0;
+            font-size: 14px;
+            color: #999;
+            line-height: 40px;
+            background: #fafbfc;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="pull-to-refresh">
+        <div id="refresh" class="refresh">下拉刷新</div>
+        <ul id="list"></ul>
+    </div>
+
+    <script>
+        const ulEl = document.getElementById('list');
+        const refreshEL = document.getElementById('refresh');
+        function render() {
+            let html = '';
+            for (let i = 0; i < 50; i++) {
+                html += '<li>item' + i + '</li>';
+            }
+            ulEl.innerHTML = html;
+        }
+        render();
+
+        const pullingText = '下拉刷新',
+            canReleaseText = '释放立即刷新',
+            refreshingText = '加载中...',
+            completeText = '刷新成功',
+            diff = { x: 0, y: 0 }, // 相对于上一次移动的差值
+            distance = { x: 0, y: 0 }, // 下拉刷新拖拽距离
+            lastTouchmove = { x: 0, y: 0 }; // 上一次移动的坐标
+        let status = '', // pulling canRelease refreshing complete
+            height = 0, // 下拉刷新元素高度
+            moveCount = 0, // touchmove触发次数，用于判断第一次触发touchmove的方向
+            isFirstMoveDown = true, // 第一次触发touchmove的方向是向下的标识
+            canTriggerRefresh = true; // 能否触发下拉刷新标识
+
+        ulEl.addEventListener('touchstart', function (e) {
+            lastTouchmove.x = e.touches[0].clientX;
+            lastTouchmove.y = e.touches[0].clientY;
+            distance.x = 0;
+            distance.y = 0;
+            height = 0;
+            step = 0;
+            // moveCount = 0;
+            isFirstMoveDown = false;
+            canTriggerRefresh = true;
+            // if (status === 'complete') {
+            //     status = 'pulling'
+            // }
+            // 父级元素滚动距离为0
+            let parentNode = refreshEL.parentNode;
+            while (true) {
+                if (parentNode.scrollTop !== 0) {
+                    canTriggerRefresh = false;
+                    break;
+                }
+                if (parentNode === document.documentElement) {
+                    break;
+                }
+                parentNode = parentNode.parentNode;
+            }
+        });
+        ulEl.addEventListener('touchmove', function (e) {
+            diff.x = e.touches[0].clientX - lastTouchmove.x;
+            diff.y = e.touches[0].clientY - lastTouchmove.y;
+            moveCount++;
+            if (diff.y > 0 && moveCount === 1) {
+                isFirstMoveDown = true;
+            }
+            if (status === 'refreshing' || status === 'complete') {
+                // isFirstMoveDown = false;
+                canTriggerRefresh = false;
+                if (isFirstMoveDown) {
+                    if (e.cancelable) {
+                        e.preventDefault();
+                    }
+                }
+            }
+            if (isFirstMoveDown && canTriggerRefresh) {
+                distance.y += diff.y;
+                // 随着距离增大阻尼力也增大
+                if (distance.y < 60) {
+                    step = diff.y * 0.4;
+                } else {
+                    step = diff.y * 0.2;
+                }
+                height += step;
+                if (height > 60) {
+                    status = 'canRelease';
+                    refreshEL.innerHTML = canReleaseText;
+                } else {
+                    status = 'pulling';
+                    refreshEL.innerHTML = pullingText;
+                }
+                refreshEL.style.transition = 'none';
+                refreshEL.style.height = height + 'px';
+                if (e.cancelable) {
+                    e.preventDefault();
+                }
+            }
+            lastTouchmove.x = e.touches[0].clientX;
+            lastTouchmove.y = e.touches[0].clientY;
+            e.stopPropagation();
+        });
+        ulEl.addEventListener('touchend', function (e) {
+            if (status === 'refreshing' || status === 'complete') {
+                return;
+            }
+            refreshEL.style.transition = 'height .3s';
+            if (height > 60) {
+                refreshEL.style.height = 40 + 'px';
+                refreshEL.innerHTML = refreshingText;
+                status = 'refreshing';
+                setTimeout(() => {
+                    refreshEL.style.height = 40 + 'px';
+                    refreshEL.innerHTML = completeText;
+                    status = 'complete';
+                    setTimeout(() => {
+                        refreshEL.style.height = 0 + 'px';
+                        status = '';
+                        moveCount = 0;
+                    }, 500)
+                }, 1000)
+            } else {
+                status = '';
+                moveCount = 0;
+                refreshEL.style.height = 0 + 'px';
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,5 +1,17 @@
 const tableList = [
 	{
+		title: 'ripple',
+		description: '仿Material UI点击水波纹效果',
+		href: 'html/ripple.html',
+		createDate: '2022-07-13'
+	},
+	{
+		title: 'pullToRefresh',
+		description: '仿Ant Desgin Mobile UI下拉刷新',
+		href: 'html/pullToRefresh.html',
+		createDate: '2022-07-11'
+	},
+	{
 		title: 'placeholderShown',
 		description: 'input悬浮提示',
 		href: 'html/placeholderShown.html',

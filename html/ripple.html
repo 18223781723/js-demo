@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>ripple</title>
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+    <style>
+        body {
+            margin: 0;
+            padding: 80px;
+            height: 2000px;
+        }
+
+        .example {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            line-height: 300px;
+            text-align: center;
+            margin-top: 30px;
+            box-shadow: 0 2px 4px -1px #0003, 0 4px 5px #00000024, 0 1px 10px #0000001f;
+            overflow: hidden;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background-color: #0000001a;
+            animation: ripple 225ms cubic-bezier(0, 0, .2, 1) forwards;
+            transform: scale3d(0, 0, 0);
+            pointer-events: none;
+        }
+
+        @keyframes ripple {
+            from {
+                transform: scale3d(0, 0, 0);
+            }
+
+            to {
+                transform: scale3d(1, 1, 1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <label><input type="checkbox" onchange="onChange(this)">overflow: visible;</label>
+
+    <div class="example">Click me</div>
+
+    <script>
+        function onChange(e) {
+            if (e.checked) {
+                exampleEl.style.overflow = 'visible';
+            } else {
+                exampleEl.style.overflow = 'hidden';
+            }
+        }
+        const exampleEl = document.querySelector('.example');
+        // 移动端触发顺序 touchstart => touchend => mousemove => mousedown => mouseup => click 文档https://w3c.github.io/touch-events/#mouse-events
+        let rippleEl = null, startTime, isMouseup = false;
+        // touchstart
+        function handleTouchstart(e) {
+            createRipple(e);
+            console.log(e.type, e.timeStamp);
+        }
+        // touchend
+        function handleTouchend(e) {
+            removeRipple(e);
+            // 阻止mouse事件触发
+            e.preventDefault();
+            console.log(e.type, e.timeStamp);
+        }
+        // touchcancel
+        function handleTouchcancel(e) {
+            removeRipple(e);
+            console.log(e.type, e.timeStamp);
+        }
+        // mousedown
+        function handleMousedown(e) {
+            isMouseup = false;
+            createRipple(e);
+            console.log(e.type, e.timeStamp);
+        }
+        // mouseup
+        function handleMouseup(e) {
+            isMouseup = true;
+            removeRipple(e);
+            console.log(e.type, e.timeStamp);
+        }
+        // mouseleave
+        function handleMouseleave(e) {
+            if (isMouseup || rippleEl === null) {
+                return;
+            }
+            removeRipple(e)
+            console.log(e.type, e.timeStamp);
+        }
+        // 创建ripple
+        function createRipple(e) {
+            startTime = e.timeStamp;
+            const current = { x: e.clientX, y: e.clientY }
+            if (e.type === 'touchstart') {
+                current.x = e.touches[0].clientX;
+                current.y = e.touches[0].clientY;
+            }
+            const rect = exampleEl.getBoundingClientRect();
+            const vertex = {
+                nw: { x: rect.left, y: rect.top },
+                ne: { x: rect.left + rect.width, y: rect.top },
+                se: { x: rect.left + rect.width, y: rect.top + rect.height },
+                sw: { x: rect.left, y: rect.top + rect.height }
+            }
+            let max = 0;
+            for (const key in vertex) {
+                // ripple半径
+                const radius = getDistance({ x: current.x, y: current.y }, vertex[key]);
+                max = Math.max(max, radius);
+            }
+            rippleEl = document.createElement('div');
+            rippleEl.className = 'ripple';
+            rippleEl.style.left = (current.x - rect.left - max) + 'px';
+            rippleEl.style.top = (current.y - rect.top - max) + 'px';
+            rippleEl.style.width = (max * 2) + 'px';
+            rippleEl.style.height = (max * 2) + 'px';
+            exampleEl.appendChild(rippleEl);
+        }
+        // 移除ripple
+        function removeRipple(e) {
+            if (e.timeStamp - startTime > 225) {
+                rippleEl.remove();
+                rippleEl = null;
+            } else {
+                rippleEl.addEventListener('animationend', function () {
+                    this.remove();
+                    if (this === rippleEl) {
+                        rippleEl = null;
+                    }
+                });
+            }
+        }
+
+        exampleEl.addEventListener('mousedown', handleMousedown);
+        exampleEl.addEventListener('mouseup', handleMouseup);
+        exampleEl.addEventListener('mouseleave', handleMouseleave);
+        exampleEl.addEventListener('touchstart', handleTouchstart);
+        exampleEl.addEventListener('touchend', handleTouchend);
+        exampleEl.addEventListener('touchcancel', handleTouchcancel);
+
+        /**
+         * 获取两点间距离
+         * @param {object} a 第一个点坐标
+         * @param {object} b 第二个点坐标
+         * @returns
+         */
+        function getDistance(a, b) {
+            const x = a.x - b.x;
+            const y = a.y - b.y;
+            return Math.hypot(x, y); // Math.sqrt(x * x + y * y);
+        }
+    </script>
+</body>
+
+</html>
