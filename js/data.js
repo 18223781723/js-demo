@@ -1,5 +1,11 @@
 const tableList = [
 	{
+		title: 'verificationCodeInput',
+		description: '验证码输入框',
+		href: 'html/verificationCodeInput.html',
+		createDate: '2022-09-20'
+	},
+	{
 		title: 'ripple',
 		description: '仿Material UI点击水波纹效果',
 		href: 'html/ripple.html',

@@ -184,6 +184,7 @@
                 const i = [].indexOf.call(this.parent.children, this.drag.element);
                 this.clone.x = this.rectList[i].left;
                 this.clone.y = this.rectList[i].top;
+				this.referenceElement = null;
                 this.drag.index = i;
                 this.drag.firstIndex = i;
                 this.clone.element = this.drag.element.cloneNode(true);
@@ -246,7 +247,9 @@
                         item.style.transition = 'none';
                         item.style.transform = 'translate3d(0px, 0px, 0px)';
                     }
-                    this.parent.insertBefore(this.drag.element, this.referenceElement);
+					if (this.referenceElement !== null) {
+						this.parent.insertBefore(this.drag.element, this.referenceElement);
+					}
                 }
             }
             handlePointercancel(e) {
