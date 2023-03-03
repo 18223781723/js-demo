@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport"
-        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <title>psTransform</title>
     <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
     <style>
@@ -25,6 +25,7 @@
             position: relative;
             outline: 1px solid #1890ff;
             touch-action: none;
+            cursor: move;
         }
 
         img {
@@ -126,8 +127,57 @@
         }
 
         .point-c {
-            left: calc(50% - 3px);
-            top: calc(50% - 3px);
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+
+        .rotate {
+            position: absolute;
+            z-index: -1;
+            width: 30px;
+            height: 30px;
+            cursor: url("../images/rotate.svg") 9 9, auto;
+        }
+
+        .rotate-n {
+            top: -15px;
+            left: calc(50% - 15px);
+        }
+
+        .rotate-e {
+            right: -15px;
+            top: calc(50% - 15px);
+        }
+
+        .rotate-s {
+            bottom: -15px;
+            left: calc(50% - 15px);
+        }
+
+        .rotate-w {
+            left: -15px;
+            top: calc(50% - 15px);
+        }
+
+        .rotate-ne {
+            top: -15px;
+            right: -15px;
+        }
+
+        .rotate-se {
+            bottom: -15px;
+            right: -15px;
+        }
+
+        .rotate-sw {
+            bottom: -15px;
+            left: -15px;
+        }
+
+        .rotate-nw {
+            top: -15px;
+            left: -15px;
         }
 
         .log {
@@ -147,135 +197,231 @@
 </head>
 
 <body>
-    <div class="container">
-        <div class="transform" data-key="drag">
-            <img src="../images/liya.jpg" alt="">
-            <div class="line line-n" data-key="n"></div>
-            <div class="line line-e" data-key="e"></div>
-            <div class="line line-s" data-key="s"></div>
-            <div class="line line-w" data-key="w"></div>
-            <div class="point point-n" data-key="n"></div>
-            <div class="point point-e" data-key="e"></div>
-            <div class="point point-s" data-key="s"></div>
-            <div class="point point-w" data-key="w"></div>
-            <div class="point point-ne" data-key="ne"></div>
-            <div class="point point-se" data-key="se"></div>
-            <div class="point point-sw" data-key="sw"></div>
-            <div class="point point-nw" data-key="nw"></div>
-            <div class="point point-c"></div>
-        </div>
+<div class="container">
+    <div class="transform" data-key="drag">
+        <img src="../images/liya.jpg" alt="">
+        <div class="line line-n" data-key="n"></div>
+        <div class="line line-e" data-key="e"></div>
+        <div class="line line-s" data-key="s"></div>
+        <div class="line line-w" data-key="w"></div>
+        <div class="point point-n" data-key="n"></div>
+        <div class="point point-e" data-key="e"></div>
+        <div class="point point-s" data-key="s"></div>
+        <div class="point point-w" data-key="w"></div>
+        <div class="point point-ne" data-key="ne"></div>
+        <div class="point point-se" data-key="se"></div>
+        <div class="point point-sw" data-key="sw"></div>
+        <div class="point point-nw" data-key="nw"></div>
+        <div class="rotate rotate-n" data-key="rotate"></div>
+        <div class="rotate rotate-e" data-key="rotate"></div>
+        <div class="rotate rotate-s" data-key="rotate"></div>
+        <div class="rotate rotate-w" data-key="rotate"></div>
+        <div class="rotate rotate-ne" data-key="rotate"></div>
+        <div class="rotate rotate-se" data-key="rotate"></div>
+        <div class="rotate rotate-sw" data-key="rotate"></div>
+        <div class="rotate rotate-nw" data-key="rotate"></div>
     </div>
-    <div class="log"></div>
+    <div class="point point-c"></div>
+</div>
+<div class="log"></div>
 
-    <script>
-        const box = document.querySelector('.transform');
-        const log = document.querySelector('.log');
-        let width = 200,
-            height = 160,
-            lastWidth = width,
-            lastHeight = height,
-            minWidth = 100,
-            minHeight = 80,
-            x = (window.innerWidth - width) * 0.5,
-            y = (window.innerHeight - height) * 0.5,
-            scaleX = 1,
-            scaleY = 1,
-            isPointerdown = false,
-            diff = { x: 0, y: 0 },
-            lastPointermove = { x: 0, y: 0 },
-            key = '',
-            rect;
-        box.style.width = width + 'px';
-        box.style.height = height + 'px';
-        box.style.transform = 'translate3d(' + x + 'px, ' + y + 'px, 0px) scale(' + scaleX + ', ' + scaleY + ')';
-        log.innerHTML = `x = ${x}<br>y = ${y}<br>width = ${width}<br>height = ${height}<br>scaleX = ${scaleX}<br>scaleY = ${scaleY}`;
-        const move = {
-            drag: function () {
-                x += diff.x;
-                y += diff.y;
-            },
-            n: function (e) {
-                height -= diff.y;
-                if (height > 0) {
-                    if (lastHeight < 0) {
-                        y += diff.y - lastHeight;
-                    } else {
-                        y += diff.y;
-                    }
+<script>
+    let defaultWidth = 200,
+        defaultHeight = 160,
+        isPointerdown = false,
+        diff = {x: 0, y: 0},
+        lastPointermove = {x: 0, y: 0},
+        key = '';
+    const box = {
+        element: document.querySelector('.transform'),
+        x: (window.innerWidth - defaultWidth) * 0.5,
+        y: (window.innerHeight - defaultHeight) * 0.5,
+        rect: null,
+        width: defaultWidth,
+        height: defaultHeight,
+        lastWidth: defaultWidth,
+        lastHeight: defaultHeight,
+        widthFlag: true,
+        heightFlag: true,
+        rotate: 0
+    }
+    const log = document.querySelector('.log');
+    const point = {
+        element: document.querySelector('.point-c'),
+        x: (window.innerWidth - 6) * 0.5,
+        y: (window.innerHeight - 6) * 0.5,
+        rect: null
+    }
+    box.element.style.width = box.width + 'px';
+    box.element.style.height = box.height + 'px';
+    box.element.style.transform = 'translate3d(' + box.x + 'px, ' + box.y + 'px, 0px) scale(1, 1) rotate(0deg)';
+    point.element.style.transform = 'translate3d(' + point.x + 'px, ' + point.y + 'px, 0px)';
+    log.innerHTML = `x = ${box.x}<br>y = ${box.y}<br>width = ${box.width}<br>height = ${box.height}<br>rotate=${box.rotate}`;
+    const action = {
+        drag: function () {
+            box.x += diff.x;
+            box.y += diff.y;
+        },
+        n: function (e) {
+            box.height -= diff.y;
+            if (box.height > 0) {
+                if (box.lastHeight < 0) {
+                    box.y += diff.y - box.lastHeight;
                 } else {
-                    y = rect.bottom;
+                    box.y += diff.y;
                 }
-
-            },
-            e: function (e) {
-                if (e.clientX - rect.left > minWidth) {
-                    width = e.clientX - rect.left;
+            } else {
+                if (box.heightFlag) {
+                    box.y = box.rect.bottom;
+                } else {
+                    box.y = box.rect.top;
                 }
-            },
-            s: function (e) {
-                if (e.clientY - rect.top > minHeight) {
-                    height = e.clientY - rect.top;
-                }
-            },
-            w: function (e) {
-                if (rect.right - e.clientX > minWidth) {
-                    width = rect.right - e.clientX;
-                    x = e.clientX;
-                }
-            },
-            ne: function (e) {
-                this.n(e);
-                this.e(e);
-            },
-            se: function (e) {
-                this.s(e);
-                this.e(e);
-            },
-            sw: function (e) {
-                this.s(e);
-                this.w(e);
-            },
-            nw: function (e) {
-                this.n(e);
-                this.w(e);
             }
+        },
+        e: function (e) {
+            box.width += diff.x
+            if (box.width > 0) {
+                if (box.widthFlag) {
+                    box.x = box.rect.left;
+                } else {
+                    box.x = box.rect.right;
+                }
+            } else {
+                if (box.lastWidth > 0) {
+                    box.x += diff.x + box.lastWidth;
+                } else {
+                    box.x += diff.x;
+                }
+            }
+        },
+        s: function (e) {
+            box.height += diff.y;
+            if (box.height > 0) {
+                if (box.heightFlag) {
+                    box.y = box.rect.top;
+                } else {
+                    box.y = box.rect.bottom;
+                }
+            } else {
+                if (box.lastHeight > 0) {
+                    box.y += diff.y + box.lastHeight;
+                } else {
+                    box.y += diff.y;
+                }
+            }
+        },
+        w: function (e) {
+            box.width -= diff.x
+            if (box.width > 0) {
+                if (box.lastWidth < 0) {
+                    box.x += diff.x - box.lastWidth;
+                } else {
+                    box.x += diff.x;
+                }
+            } else {
+                if (box.widthFlag) {
+                    box.x = box.rect.right;
+                } else {
+                    box.x = box.rect.left;
+                }
+            }
+        },
+        ne: function (e) {
+            this.n(e);
+            this.e(e);
+        },
+        se: function (e) {
+            this.s(e);
+            this.e(e);
+        },
+        sw: function (e) {
+            this.s(e);
+            this.w(e);
+        },
+        nw: function (e) {
+            this.n(e);
+            this.w(e);
+        },
+        rotate: function (e) {
+            box.rotate += getAngle(point, {x: e.clientX, y: e.clientY}) - getAngle(point, lastPointermove);
+            box.rotate = Number(box.rotate.toFixed(1));
+            console.log(box.rotate)
         }
+    }
 
-        box.addEventListener('pointerdown', function (e) {
-            isPointerdown = true;
-            e.target.setPointerCapture(e.pointerId);
-            lastPointermove = { x: e.clientX, y: e.clientY };
-            key = e.target.dataset.key;
-            rect = box.getBoundingClientRect();
-            console.log(rect);
-        });
-        box.addEventListener('pointermove', function (e) {
-            if (isPointerdown) {
-                const current = { x: e.clientX, y: e.clientY };
-                diff.x = current.x - lastPointermove.x;
-                diff.y = current.y - lastPointermove.y;
-                lastPointermove = { x: current.x, y: current.y };
-                move[key](e);
-                lastWidth = width;
-                lastHeight = height;
-                box.style.width = width + 'px';
-                box.style.height = (height < 0 ? -height : height) + 'px';
-                box.style.transform = 'translate3d(' + x + 'px, ' + y + 'px, 0) scale(' + scaleX + ', ' + (height > 0 ? 1 : -1) + ')';
-                log.innerHTML = `x = ${x}<br>y = ${y}<br>width = ${width}<br>height = ${height}<br>scaleX = ${scaleX}<br>scaleY = ${scaleY}`;
-                e.preventDefault();
-            }
-        });
-        box.addEventListener('pointerup', function (e) {
-            if (isPointerdown) {
-                isPointerdown = false;
-            }
-        });
-        box.addEventListener('pointercancel', function (e) {
-            if (isPointerdown) {
-                isPointerdown = false;
-            }
-        });
-    </script>
+    function getAngle(a, b) {
+        const x = a.x - b.x
+        const y = a.y - b.y;
+        return 180 * Math.atan2(y, x) / Math.PI
+    }
+
+    box.element.addEventListener('pointerdown', function (e) {
+        isPointerdown = true;
+        e.target.setPointerCapture(e.pointerId);
+        lastPointermove = {x: e.clientX, y: e.clientY};
+        key = e.target.dataset.key;
+        box.rect = box.element.getBoundingClientRect();
+        box.heightFlag = box.height > 0;
+        box.widthFlag = box.width > 0;
+        console.log(box.rect);
+    });
+    box.element.addEventListener('pointermove', function (e) {
+        if (isPointerdown) {
+            const current = {x: e.clientX, y: e.clientY};
+            diff.x = current.x - lastPointermove.x;
+            diff.y = current.y - lastPointermove.y;
+            action[key](e);
+            lastPointermove = {x: current.x, y: current.y};
+            box.lastWidth = box.width;
+            box.lastHeight = box.height;
+            box.element.style.width = (box.width < 0 ? -box.width : box.width) + 'px';
+            box.element.style.height = (box.height < 0 ? -box.height : box.height) + 'px';
+            box.element.style.transform = 'translate3d(' + box.x + 'px, ' + box.y + 'px, 0) scale('
+                + (box.width > 0 ? 1 : -1) + ', ' + (box.height > 0 ? 1 : -1) + ') rotate(' + box.rotate + 'deg)';
+            log.innerHTML = `x = ${box.x}<br>y = ${box.y}<br>width = ${box.width}<br>height = ${box.height}<br>rotate=${box.rotate}`;
+            e.preventDefault();
+        }
+    });
+    box.element.addEventListener('pointerup', function (e) {
+        if (isPointerdown) {
+            isPointerdown = false;
+        }
+    });
+    box.element.addEventListener('pointercancel', function (e) {
+        if (isPointerdown) {
+            isPointerdown = false;
+        }
+    });
+    point.element.addEventListener('pointerdown', function (e) {
+        isPointerdown = true;
+        point.element.setPointerCapture(e.pointerId);
+        lastPointermove = {x: e.clientX, y: e.clientY};
+        point.rect = point.element.getBoundingClientRect();
+        console.log(point.rect);
+    });
+    point.element.addEventListener('pointermove', function (e) {
+        if (isPointerdown) {
+            const current = {x: e.clientX, y: e.clientY};
+            diff.x = current.x - lastPointermove.x;
+            diff.y = current.y - lastPointermove.y;
+            lastPointermove = {x: current.x, y: current.y};
+            point.x += diff.x;
+            point.y += diff.y;
+            point.element.style.transform = 'translate3d(' + point.x + 'px, ' + point.y + 'px, 0)';
+            e.preventDefault();
+        }
+    });
+    point.element.addEventListener('pointerup', function (e) {
+        if (isPointerdown) {
+            isPointerdown = false;
+        }
+    });
+    point.element.addEventListener('pointercancel', function (e) {
+        if (isPointerdown) {
+            isPointerdown = false;
+        }
+    });
+</script>
 </body>
 
 </html>
