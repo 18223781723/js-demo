@@ -147,11 +147,11 @@
                     // 缩放比例
                     const _scale = scale * ratio;
                     if (_scale > maxScale) {
+						ratio = maxScale / scale;
                         scale = maxScale;
-                        ratio = maxScale / scale;
                     } else if (_scale < minScale) {
+						ratio = minScale / scale;
                         scale = minScale;
-                        ratio = minScale / scale;
                     } else {
                         scale = _scale;
                     }
