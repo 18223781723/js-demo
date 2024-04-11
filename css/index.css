@@ -18,6 +18,11 @@ table {
 	border-collapse: collapse;
 }
 
+thead {
+	position: sticky;
+	top: 0;
+}
+
 th {
 	text-align: left;
 	background-color: #FAFAFA;
@@ -26,7 +31,12 @@ th {
 th,
 td {
 	padding: 16px;
-	border: 1px solid #F0F0F0;
+	border-bottom: 1px solid #F0F0F0;
+}
+
+th:not(:first-child),
+td:not(:first-child) {
+	border-left: 1px solid #F0F0F0;
 }
 
 tr:hover td {
