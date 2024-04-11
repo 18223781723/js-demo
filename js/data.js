@@ -53,12 +53,14 @@ const tableList = [
 		href: 'html/dragAndDrop.html',
 		createDate: '2021-11-01'
 	},
+	/* 
+	镜像翻转的逻辑暂未实现
 	{
 		title: 'ps transform',
 		description: '仿ps变换操作',
 		href: 'html/psTransform.html',
 		createDate: '2021-10-19'
-	},
+	}, */
 	{
 		title: 'div resize',
 		description: 'div拖拽拉伸',
