@@ -1,5 +1,11 @@
 const tableList = [
 	{
+		title: 'Canvas',
+		description: 'Canvas缩放保持清晰度',
+		href: 'html/canvas.html',
+		createDate: '2025-03-28'
+	},
+	{
 		title: 'verificationCodeInput',
 		description: '验证码输入框',
 		href: 'html/verificationCodeInput.html',
